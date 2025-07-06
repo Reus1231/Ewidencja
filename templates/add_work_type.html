@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dodaj Nowy Typ Pracy</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="form-group form-check">
+        {{ form.is_piece_rate(class="form-check-input", id="is_piece_rate") }}
+        <label class="form-check-label" for="is_piece_rate">{{ form.is_piece_rate.label.text }}</label>
+    </div>
+    <div class="form-group" id="unit_field">
+        {{ form.unit.label(class="form-label") }}
+        {{ form.unit(class="form-control") }}
+        {% for error in form.unit.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    {{ form.submit(class="btn btn-primary") }}
+    <a href="{{ url_for('work_types') }}" class="btn btn-secondary">Anuluj</a>
+</form>
+<script>
+    function toggleUnitField() {
+        var isPieceRateCheckbox = document.getElementById('is_piece_rate');
+        var unitField = document.getElementById('unit_field');
+        if (isPieceRateCheckbox.checked) {
+            unitField.style.display = 'block';
+            document.getElementById('unit').setAttribute('required', 'required');
+        } else {
+            unitField.style.display = 'none';
+            document.getElementById('unit').removeAttribute('required');
+            document.getElementById('unit').value = '';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', toggleUnitField);
+    document.getElementById('is_piece_rate').addEventListener('change', toggleUnitField);
+</script>
+{% endblock %}

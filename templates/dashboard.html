@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Panel główny</h2>
+<div class="row row-cols-1 row-cols-md-3 g-4">
+  {% for url, icon, title, text in [
+    (url_for('employees'), 'fa-users', 'Pracownicy', 'Zarządzaj pracownikami'),
+    (url_for('fields'), 'fa-tractor', 'Pola', 'Zarządzaj polami'),
+    (url_for('varieties'), 'fa-leaf', 'Odmiany', 'Zarządzaj odmianami'),
+    (url_for('work_types'), 'fa-tasks', 'Typy pracy', 'Typy pracy'),
+    (url_for('harvests'), 'fa-basket-shopping', 'Dzienne zbiory', 'Wprowadzaj zbiory'),
+    (url_for('entries'), 'fa-clock', 'Wpisy pracy', 'Rejestruj prace'),
+    (url_for('employee_reports'), 'fa-file-alt', 'Raporty', 'Generuj raporty')
+  ] %}
+  <div class="col">
+    <a href="{{ url }}" class="text-decoration-none text-white">
+      <div class="card custom-red shadow h-100 text-center rounded-4 border-0">
+        <div class="card-body">
+          <i class="fas {{ icon }} fa-3x mb-2"></i>
+          <h5 class="card-title mt-2">{{ title }}</h5>
+          <p class="card-text">{{ text }}</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

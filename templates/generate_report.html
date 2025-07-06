@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Generuj Raport Excel</h2>
+
+<form method="POST" action="{{ url_for('generate_report') }}" class="mb-4">
+    <div class="form-group">
+        <label for="employee_id">Wybierz Pracownika (opcjonalnie):</label>
+        <select name="employee_id" id="employee_id" class="form-control">
+            <option value="">Wszyscy pracownicy</option>
+            {% for emp in employees %}
+            <option value="{{ emp.id }}" {% if emp.id == selected_employee %}selected{% endif %}>{{ emp.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="start_date">Data początkowa (opcjonalnie):</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+    </div>
+    <div class="form-group">
+        <label for="end_date">Data końcowa (opcjonalnie):</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Generuj Raport</button>
+</form>
+
+{% endblock %}

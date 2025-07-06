@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Rejestracja obecności</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.employee_id.label }} {{ form.employee_id(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.date.label }} {{ form.date(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.time_in.label }} {{ form.time_in(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.time_out.label }} {{ form.time_out(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.comment.label }} {{ form.comment(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a href="{{ url_for('presence_list') }}" class="btn btn-secondary">Lista obecności</a>
+</form>
+{% endblock %}

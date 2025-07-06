@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Raport pracowników</h2>
+
+<form method="get" class="mb-4 row g-3">
+    <div class="col-md-4">
+        <label for="employee_id">Pracownik/pracownicy:</label>
+        <select name="employee_id" id="employee_id" class="form-control" multiple size="5">
+            <option value="">-- Wszyscy --</option>
+            {% for emp in employees %}
+                <option value="{{ emp.id }}"
+                    {% if selected_employee_ids and emp.id|string in selected_employee_ids %}selected{% endif %}>
+                    {{ emp.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <small>Przytrzymaj Ctrl / Cmd, aby zaznaczyć kilku.</small>
+    </div>
+    <div class="col-md-3">
+        <label for="start_date">Data od:</label>
+        <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+    </div>
+    <div class="col-md-3">
+        <label for="end_date">Data do:</label>
+        <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+    </div>
+    <div class="col-md-2 align-self-end">
+        <button type="submit" class="btn btn-primary w-100">Pokaż raport</button>
+    </div>
+</form>
+
+<form method="get" action="{{ url_for('employee_reports_export') }}">
+    <input type="hidden" name="start_date" value="{{ start_date }}">
+    <input type="hidden" name="end_date" value="{{ end_date }}">
+    {% for emp_id in selected_employee_ids %}
+        <input type="hidden" name="employee_id" value="{{ emp_id }}">
+    {% endfor %}
+    <button type="submit" class="btn btn-success mb-3">Eksportuj do Excela</button>
+</form>
+</form>
+
+{% if summaries %}
+    {% for summary in summaries %}
+        <h4>Podsumowanie dla: {{ summary.employee.name }}, okres: {{ summary.start_date }} - {{ summary.end_date }}</h4>
+        <table class="table table-bordered mb-4">
+            <tr>
+                <th>Suma godzin</th>
+                <td>{{ "%.2f"|format(summary.hours) }}</td>
+                <th>Wynagrodzenie godzinowe</th>
+                <td>{{ "%.2f"|format(summary.hourly_pay) }} PLN</td>
+            </tr>
+            <tr>
+                <th>Suma zbiorów (akord)</th>
+                <td>{{ "%.2f"|format(summary.quantity) }}</td>
+                <th>Wynagrodzenie akordowe</th>
+                <td>{{ "%.2f"|format(summary.piece_pay) }} PLN</td>
+            </tr>
+        </table>
+    {% endfor %}
+{% elif start_date or end_date %}
+    <p class="text-muted">Brak danych do wyświetlenia w wybranym zakresie lub dla wybranych pracowników.</p>
+{% endif %}
+
+{% endblock %}

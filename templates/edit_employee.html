@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edytuj Pracownika</h2>
+<form method="POST">
+    <div class="form-group">
+        <label for="name">Nazwa Pracownika:</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ employee.name }}" required>
+    </div>
+    <div class="form-group">
+        <label for="hourly_rate">Stawka Godzinowa (PLN/godz):</label>
+        <input type="number" step="0.01" class="form-control" id="hourly_rate" name="hourly_rate" value="{{ "%.2f" | format(employee.hourly_rate) }}">
+    </div>
+    <div class="form-group">
+        <label for="piece_rate">Stawka Akordowa (PLN/jedn. domyślna):</label>
+        <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" value="{{ "%.2f" | format(employee.piece_rate) }}">
+    </div>
+    <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="is_active" name="is_active" {% if employee.is_active %}checked{% endif %}>
+        <label class="form-check-label" for="is_active">Aktywny</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
+    <a href="{{ url_for('employees') }}" class="btn btn-secondary">Anuluj</a>
+</form>
+{% endblock %}
