@@ -10,7 +10,7 @@ import openpyxl
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bardzo-tajny'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///borowki.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///borowki.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
