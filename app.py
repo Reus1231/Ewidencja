@@ -23,6 +23,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
+    is_approved = db.Column(db.Boolean, default=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -163,12 +164,37 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data.strip()).first()
         if user and user.check_password(form.password.data):
+            if not user.is_approved:
+                flash('Twoje konto oczekuje na zatwierdzenie przez administratora.', 'warning')
+                return redirect(url_for('login'))
             login_user(user)
             flash('Zalogowano!', 'success')
             return redirect(url_for('dashboard'))
         else:
             flash('Błędna nazwa użytkownika lub hasło.', 'danger')
     return render_template('login.html', form=form)
+
+@app.route('/pending_users')
+@login_required
+def pending_users():
+    # Załóżmy, że admin to user.username == "admin"
+    if current_user.username != 'admin':
+        flash('Brak dostępu!', 'danger')
+        return redirect(url_for('dashboard'))
+    users = User.query.filter_by(is_approved=False).all()
+    return render_template('pending_users.html', users=users)
+
+@app.route('/approve_user/<int:user_id>', methods=['POST'])
+@login_required
+def approve_user(user_id):
+    if current_user.username != 'admin':
+        flash('Brak dostępu!', 'danger')
+        return redirect(url_for('dashboard'))
+    user = User.query.get_or_404(user_id)
+    user.is_approved = True
+    db.session.commit()
+    flash(f'Zatwierdzono użytkownika {user.username}', 'success')
+    return redirect(url_for('pending_users'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
