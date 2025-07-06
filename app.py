@@ -203,6 +203,24 @@ def employees():
     employees = Employee.query.all()
     return render_template('employees.html', employees=employees)
 
+@app.route('/deactivate_employee/<int:employee_id>', methods=['POST'])
+@login_required
+def deactivate_employee(employee_id):
+    emp = Employee.query.get_or_404(employee_id)
+    emp.is_active = False
+    db.session.commit()
+    flash('Pracownik został dezaktywowany.', 'info')
+    return redirect(url_for('employees'))
+
+@app.route('/activate_employee/<int:employee_id>', methods=['POST'])
+@login_required
+def activate_employee(employee_id):
+    emp = Employee.query.get_or_404(employee_id)
+    emp.is_active = True
+    db.session.commit()
+    flash('Pracownik został ponownie aktywowany.', 'success')
+    return redirect(url_for('employees'))
+
 @app.route('/add_employee', methods=['GET', 'POST'])
 @login_required
 def add_employee():
