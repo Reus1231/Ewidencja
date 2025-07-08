@@ -567,7 +567,13 @@ def add_entry():
         field_id = request.form.get('field_id')
         comment = request.form.get('comment', '')
         piece_rate = request.form.get('piece_rate')
-        piece_rate = float(piece_rate) if piece_rate else None
+
+        # KLUCZOWA ZMIANA: zawsze ustawiaj piece_rate (indywidualna lub domyślna)
+        if not piece_rate:
+            employee = Employee.query.get(employee_id)
+            piece_rate = employee.piece_rate
+        else:
+            piece_rate = float(piece_rate)
 
         entry_date = datetime.strptime(date_selected, '%Y-%m-%d').date()
 
@@ -580,7 +586,7 @@ def add_entry():
             variety_id=int(variety_id) if variety_id else None,
             field_id=int(field_id) if field_id else None,
             comment=comment,
-            piece_rate=piece_rate
+            piece_rate=float(piece_rate)
         )
         db.session.add(entry)
         db.session.commit()
@@ -597,24 +603,32 @@ def edit_entry(entry_id):
     varieties = BerryVariety.query.all()
     fields = Field.query.all()
     if request.method == 'POST':
-        date_selected = request.form['date']
-        employee_id = int(request.form['employee_id'])
-        work_type_id = int(request.form['work_type_id'])
-        hours = float(request.form.get('hours', 0) or 0)
-        quantity = float(request.form.get('quantity', 0) or 0)
-        variety_id = request.form.get('variety_id')
-        field_id = request.form.get('field_id')
-        comment = request.form.get('comment', '')
-        piece_rate = request.form.get('piece_rate')
-        entry.date = datetime.strptime(date_selected, '%Y-%m-%d').date()
-        entry.employee_id = employee_id
-        entry.work_type_id = work_type_id
-        entry.hours = hours
-        entry.quantity = quantity
-        entry.variety_id = int(variety_id) if variety_id else None
-        entry.field_id = int(field_id) if field_id else None
-        entry.comment = comment
-        entry.piece_rate = float(piece_rate) if piece_rate else None
+    date_selected = request.form['date']
+    employee_id = int(request.form['employee_id'])
+    work_type_id = int(request.form['work_type_id'])
+    hours = float(request.form.get('hours', 0) or 0)
+    quantity = float(request.form.get('quantity', 0) or 0)
+    variety_id = request.form.get('variety_id')
+    field_id = request.form.get('field_id')
+    comment = request.form.get('comment', '')
+    piece_rate = request.form.get('piece_rate')
+
+    entry.date = datetime.strptime(date_selected, '%Y-%m-%d').date()
+    entry.employee_id = employee_id
+    entry.work_type_id = work_type_id
+    entry.hours = hours
+    entry.quantity = quantity
+    entry.variety_id = int(variety_id) if variety_id else None
+    entry.field_id = int(field_id) if field_id else None
+    entry.comment = comment
+
+    # WAŻNE: UZUPEŁNIJ PIECE_RATE, JEŚLI PUSTE
+    if not piece_rate:
+        employee = Employee.query.get(employee_id)
+        piece_rate = employee.piece_rate
+    else:
+        piece_rate = float(piece_rate)
+    entry.piece_rate = float(piece_rate)
 
         db.session.commit()
         flash('Zaktualizowano wpis pracy.', 'success')

@@ -36,15 +36,10 @@
         <div class="form-group">
             <label for="quantity">Ilość (np. koszyki, sztuki):</label>
             <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="{{ "%.2f" | format(entry.quantity) }}">
-			<div id="piece_rate_fields" style="display: none;">
-    <div class="form-group">
-        <label for="quantity">Ilość (np. koszyki, sztuki):</label>
-        <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="{{ "%.2f" | format(entry.quantity) }}">
-    </div>
-    <div class="form-group">
-        <label for="piece_rate">Stawka akordowa (PLN/jedn.):</label>
-        <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" value="{{ entry.piece_rate if entry.piece_rate is not none else '' }}">
-    </div>
+        </div>
+        <div class="form-group">
+            <label for="piece_rate">Stawka akordowa (PLN/jedn.):</label>
+            <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" value="{{ entry.piece_rate if entry.piece_rate is not none else '' }}">
         </div>
         <div class="form-group">
             <label for="variety_id">Odmiana:</label>
