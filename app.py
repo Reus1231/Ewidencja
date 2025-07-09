@@ -432,20 +432,20 @@ if not piece_rate:
     employee = Employee.query.get(employee_id)
     piece_rate = employee.piece_rate
 else:
-    piece_rate = float(piece_rate)
+piece_rate = float(piece_rate)
 
-        # Zamiana stringa na obiekt date!
-        date_obj = datetime.strptime(date_selected, "%Y-%m-%d").date()
+# Zamiana stringa na obiekt date!
+date_obj = datetime.strptime(date_selected, "%Y-%m-%d").date()
 
-        # Utwórz wpis w DailyHarvest
-        harvest = DailyHarvest(
-            date=date_obj,
-            employee_id=employee_id,
-            quantity_kg=quantity_kg,
-            variety_id=variety_id,
-            field_id=field_id,
-            comment=comment
-        )
+# Utwórz wpis w DailyHarvest
+harvest = DailyHarvest(
+    date=date_obj,
+    employee_id=employee_id,
+    quantity_kg=quantity_kg,
+    variety_id=variety_id,
+    field_id=field_id,
+    comment=comment
+)
         db.session.add(harvest)
         db.session.commit()
 
