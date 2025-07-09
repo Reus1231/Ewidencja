@@ -38,6 +38,10 @@
         <label for="comment">Komentarz (opcjonalnie):</label>
         <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
     </div>
+	<div class="form-group">
+    <label for="piece_rate">Stawka za kilogram (PLN):</label>
+    <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" required>
+</div>
     <button type="submit" class="btn btn-primary">Dodaj Zbiór</button>
     <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Anuluj</a>
 </form>

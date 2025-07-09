@@ -427,6 +427,12 @@ def add_daily_harvest():
         variety_id = int(request.form['variety_id'])
         field_id = int(request.form['field_id'])
         comment = request.form.get('comment', '')
+        piece_rate = request.form.get('piece_rate')
+if not piece_rate:
+    employee = Employee.query.get(employee_id)
+    piece_rate = employee.piece_rate
+else:
+    piece_rate = float(piece_rate)
 
         # Zamiana stringa na obiekt date!
         date_obj = datetime.strptime(date_selected, "%Y-%m-%d").date()
@@ -451,15 +457,16 @@ def add_daily_harvest():
             return redirect(url_for('add_daily_harvest'))
 
         entry = Entry(
-            date=date_obj,
-            employee_id=employee_id,
-            work_type_id=worktype.id,
-            hours=0,
-            quantity=quantity_kg,
-            variety_id=variety_id,
-            field_id=field_id,
-            comment='(Automatyczny wpis z dziennego zbioru) ' + (comment or '')
-        )
+    date=date_obj,
+    employee_id=employee_id,
+    work_type_id=worktype.id,
+    hours=0,
+    quantity=quantity_kg,
+    variety_id=variety_id,
+    field_id=field_id,
+    comment='(Automatyczny wpis z dziennego zbioru) ' + (comment or ''),
+    piece_rate=piece_rate
+)
         db.session.add(entry)
         db.session.commit()
 
