@@ -24,3 +24,17 @@ body {
     background-color: #0056b3;
     border-color: #0056b3;
 }
+:root {
+  --bg: #ffffff;
+  --text: #222222;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body.dark-mode {
+  --bg: #1a1a1a;
+  --text: #f1f1f1;
+}
