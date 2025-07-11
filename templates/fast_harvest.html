@@ -1,17 +1,45 @@
-<h2>Szybki wpis zbiorów (Krok 1)</h2>
-<p>Wpisz ilość kilogramów dla każdego pracownika. Na końcu kliknij "Koniec".</p>
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Szybki wpis zbiorów — dodaj koszyki</h2>
 <form method="post">
-  <table>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Pracownik</th>
+        <th>Dodaj koszyk [kg]</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for emp in employees %}
+      <tr>
+        <td>{{ emp.name }}</td>
+        <td><input type="number" name="kg_{{ emp.id }}" min="0" step="0.01" class="form-control"></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit" class="btn btn-primary">Dodaj koszyki</button>
+</form>
+
+<h3 class="mt-4">Podsumowanie dnia:</h3>
+<table class="table">
+  <thead>
     <tr>
       <th>Pracownik</th>
-      <th>Kg</th>
+      <th>Suma kg</th>
+      <th>Wszystkie koszyki</th>
     </tr>
-    {% for emp in employees %}
+  </thead>
+  <tbody>
+  {% for item in summary %}
     <tr>
-      <td>{{ emp.name }}</td>
-      <td><input type="number" name="kg_{{ emp.id }}" min="0" step="0.01"></td>
+      <td>{{ item.name }}</td>
+      <td>{{ item.total }}</td>
+      <td>{{ item.details|join(', ') }}</td>
     </tr>
-    {% endfor %}
-  </table>
-  <button type="submit">Koniec</button>
-</form>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('fast_harvest_finish') }}" class="btn btn-success mt-3">Koniec — zapisz sumy</a>
+{% endblock %}

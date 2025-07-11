@@ -527,21 +527,91 @@ def delete_daily_harvest(harvest_id):
 @app.route('/fast_harvest', methods=['GET', 'POST'])
 @login_required
 def fast_harvest():
-    today = date.today()
     employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    if 'fast_harvest_kg_data' not in session:
+        # Dane: {employee_id: [kg, kg, ...]}
+        session['fast_harvest_kg_data'] = {}
+    kg_data = session['fast_harvest_kg_data']
+
     if request.method == 'POST':
-        # Zapisz kilogramy do sesji
-        kg_dict = {}
         for emp in employees:
             kg = request.form.get(f'kg_{emp.id}')
             if kg and float(kg) > 0:
-                kg_dict[str(emp.id)] = float(kg)
-        if not kg_dict:
-            flash("Nie wpisano żadnych kilogramów!", "warning")
-            return redirect(url_for('fast_harvest'))
-        session['fast_harvest_kg'] = kg_dict
-        return redirect(url_for('fast_harvest_price'))
-    return render_template('fast_harvest.html', employees=employees)
+                emp_id = str(emp.id)
+                if emp_id not in kg_data:
+                    kg_data[emp_id] = []
+                kg_data[emp_id].append(float(kg))
+        session['fast_harvest_kg_data'] = kg_data
+        flash("Dodano koszyki. Możesz dodać kolejne albo kliknąć 'Koniec — zapisz sumy'", "info")
+        return redirect(url_for('fast_harvest'))
+
+    # Generujemy podsumowanie (sumę) dla podglądu
+    summary = []
+    for emp in employees:
+        emp_id = str(emp.id)
+        total = sum(kg_data.get(emp_id, []))
+        summary.append({'name': emp.name, 'total': total, 'details': kg_data.get(emp_id, [])})
+
+    return render_template('fast_harvest.html', employees=employees, summary=summary)
+
+
+@app.route('/fast_harvest_finish', methods=['GET', 'POST'])
+@login_required
+def fast_harvest_finish():
+    today = date.today()
+    kg_data = session.get('fast_harvest_kg_data', {})
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    varieties = BerryVariety.query.all()
+    fields = Field.query.all()
+
+    if not kg_data:
+        flash("Najpierw dodaj koszyki!", "warning")
+        return redirect(url_for('fast_harvest'))
+
+    if request.method == 'POST':
+        piece_rate = float(request.form['piece_rate'])
+        variety_id = int(request.form['variety_id'])
+        field_id = int(request.form['field_id'])
+
+        for emp_id, kg_list in kg_data.items():
+            total_kg = sum(kg_list)
+            if total_kg > 0:
+                harvest = DailyHarvest(
+                    date=today,
+                    employee_id=int(emp_id),
+                    quantity_kg=total_kg,
+                    variety_id=variety_id,
+                    field_id=field_id,
+                    comment=f"Szybki wpis, sum koszyków: {kg_list}"
+                )
+                db.session.add(harvest)
+                worktype = WorkType.query.filter_by(is_piece_rate=True).first()
+                if worktype:
+                    entry = Entry(
+                        date=today,
+                        employee_id=int(emp_id),
+                        work_type_id=worktype.id,
+                        hours=0,
+                        quantity=total_kg,
+                        variety_id=variety_id,
+                        field_id=field_id,
+                        comment=f"Automatyczny wpis z sumy koszyków: {kg_list}",
+                        piece_rate=piece_rate
+                    )
+                    db.session.add(entry)
+        db.session.commit()
+        session.pop('fast_harvest_kg_data', None)
+        flash("Zapisano sumy zbiorów!", "success")
+        return redirect(url_for('harvests'))
+
+    # Podgląd sum
+    summary = []
+    for emp in employees:
+        emp_id = str(emp.id)
+        total = sum(kg_data.get(emp_id, []))
+        summary.append({'name': emp.name, 'total': total, 'details': kg_data.get(emp_id, [])})
+
+    return render_template('fast_harvest_finish.html', varieties=varieties, fields=fields, summary=summary)
 
 @app.route('/fast_harvest_price', methods=['GET', 'POST'])
 @login_required
