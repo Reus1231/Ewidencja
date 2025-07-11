@@ -774,6 +774,22 @@ def employee_reports_export():
         ]
         sheet.append(row)
 
+    # --- SUMA na końcu ---
+    last_row = sheet.max_row
+    sum_hours = sum(float(sheet.cell(row=i, column=4).value) for i in range(2, last_row + 1))
+    sum_hourly_pay = sum(float(str(sheet.cell(row=i, column=5).value).replace(" PLN", "")) for i in range(2, last_row + 1))
+    sum_quantity = sum(float(sheet.cell(row=i, column=6).value) for i in range(2, last_row + 1))
+    sum_piece_pay = sum(float(str(sheet.cell(row=i, column=7).value).replace(" PLN", "")) for i in range(2, last_row + 1))
+
+    sheet.append([
+        "SUMA:", "", "",
+        "%.2f" % sum_hours,
+        "%.2f PLN" % sum_hourly_pay,
+        "%.2f" % sum_quantity,
+        "%.2f PLN" % sum_piece_pay
+    ])
+    # --- KONIEC sumy ---
+
     output = BytesIO()
     workbook.save(output)
     output.seek(0)
