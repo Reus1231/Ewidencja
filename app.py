@@ -98,7 +98,6 @@ class DailySettings(db.Model):
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
     # Możesz dodać inne pola, jeśli chcesz
 
-    employee = db.relationship('Employee')
 
 @app.context_processor
 def inject_now():
