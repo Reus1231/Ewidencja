@@ -170,7 +170,7 @@ print(app.url_map)
 @login_required
 def download_backup():
     # Tylko admin może pobierać backup
-    if current_user.username != 'admin':
+    if current_user.username != 'Admin':
         flash('Brak dostępu!', 'danger')
         return redirect(url_for('dashboard'))
 
