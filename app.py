@@ -96,7 +96,6 @@ class DailySettings(db.Model):
     date = db.Column(db.Date, nullable=False, unique=True)
     field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
-    # Możesz dodać inne pola, jeśli chcesz
 
 
 @app.context_processor
@@ -184,7 +183,6 @@ def login():
 @app.route('/pending_users')
 @login_required
 def pending_users():
-    # Załóżmy, że admin to user.username == "admin"
     if current_user.username != 'admin':
         flash('Brak dostępu!', 'danger')
         return redirect(url_for('dashboard'))
@@ -442,10 +440,8 @@ def add_daily_harvest():
         else:
             piece_rate = float(piece_rate)
 
-        # Zamiana stringa na obiekt date!
         date_obj = datetime.strptime(date_selected, "%Y-%m-%d").date()
 
-        # Utwórz wpis w DailyHarvest
         harvest = DailyHarvest(
             date=date_obj,
             employee_id=employee_id,
@@ -457,8 +453,6 @@ def add_daily_harvest():
         db.session.add(harvest)
         db.session.commit()
 
-        # AUTOMATYCZNY WPIS DO ENTRY!
-        # Pobierz typ pracy akordowy (np. o nazwie "Zbiór" lub pierwszy is_piece_rate=True)
         worktype = WorkType.query.filter_by(is_piece_rate=True).first()
         if not worktype:
             flash('Brak zdefiniowanego typu pracy "akordowej". Dodaj taki typ w "Typy pracy"!', 'danger')
@@ -524,8 +518,6 @@ def delete_daily_harvest(harvest_id):
     flash('Usunięto zbiór.', 'success')
     return redirect(url_for('harvests'))
     
-# ... (wszystkie wcześniejsze importy, modele itd. zostają bez zmian)
-
 @app.route('/fast_harvest', methods=['GET', 'POST'])
 @login_required
 def fast_harvest():
@@ -561,45 +553,11 @@ def fast_harvest():
     summary = []
     for emp in employees:
         emp_id = str(emp.id)
-        # przekazujemy details jako listę (idx, kg)
         details = list(enumerate(kg_data.get(emp_id, [])))
         total = round(sum(kg_data.get(emp_id, [])), 2)
         summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
 
     return render_template('fast_harvest.html', employees=employees, summary=summary)
-
-
-                db.session.add(harvest)
-                worktype = WorkType.query.filter_by(is_piece_rate=True).first()
-                if worktype:
-                    entry = Entry(
-                        date=today,
-                        employee_id=int(emp_id),
-                        work_type_id=worktype.id,
-                        hours=0,
-                        quantity=total_kg,
-                        variety_id=variety_id,
-                        field_id=field_id,
-                        comment=f"Automatyczny wpis z sumy koszyków: {kg_list}",
-                        piece_rate=piece_rate
-                    )
-                    db.session.add(entry)
-        db.session.commit()
-        session.pop('fast_harvest_kg_data', None)
-        flash("Zapisano sumy zbiorów!", "success")
-        return redirect(url_for('harvests'))
-
-    summary = []
-    for emp in employees:
-        emp_id = str(emp.id)
-        details = list(enumerate(kg_data.get(emp_id, [])))
-        total = round(sum(kg_data.get(emp_id, [])), 2)
-        summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
-
-    return render_template('fast_harvest_finish.html', varieties=varieties, fields=fields, summary=summary)
-
-# ... (pozostałe widoki bez zmian)
-
 
 @app.route('/fast_harvest_finish', methods=['GET', 'POST'])
 @login_required
@@ -718,7 +676,6 @@ def add_entry():
         comment = request.form.get('comment', '')
         piece_rate = request.form.get('piece_rate')
 
-        # KLUCZOWA ZMIANA: zawsze ustawiaj piece_rate (indywidualna lub domyślna)
         if not piece_rate:
             employee = Employee.query.get(employee_id)
             piece_rate = employee.piece_rate
@@ -772,7 +729,6 @@ def edit_entry(entry_id):
         entry.field_id = int(field_id) if field_id else None
         entry.comment = comment
 
-        # WAŻNE: UZUPEŁNIJ PIECE_RATE, JEŚLI PUSTE
         if not piece_rate:
             employee = Employee.query.get(employee_id)
             piece_rate = employee.piece_rate
@@ -793,8 +749,6 @@ def delete_entry(entry_id):
     db.session.commit()
     flash('Usunięto wpis pracy.', 'success')
     return redirect(url_for('entries'))
-
-# --- /Wpisy Pracy ---
 
 @app.route('/employee_reports', methods=['GET'])
 @login_required
@@ -916,7 +870,6 @@ def employee_reports_export():
         ]
         sheet.append(row)
 
-    # --- SUMA na końcu ---
     last_row = sheet.max_row
     sum_hours = sum(float(sheet.cell(row=i, column=4).value) for i in range(2, last_row + 1))
     sum_hourly_pay = sum(float(str(sheet.cell(row=i, column=5).value).replace(" PLN", "")) for i in range(2, last_row + 1))
@@ -930,7 +883,6 @@ def employee_reports_export():
         "%.2f" % sum_quantity,
         "%.2f PLN" % sum_piece_pay
     ])
-    # --- KONIEC sumy ---
 
     output = BytesIO()
     workbook.save(output)
