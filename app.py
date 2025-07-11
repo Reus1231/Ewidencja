@@ -1,7 +1,7 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash, send_file
+from flask import send_file, flash, redirect, url_for, Flask, render_template, request, redirect, url_for, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_login import login_required, current_user LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from forms import LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm, WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
@@ -9,6 +9,7 @@ from flask import send_file, request
 from io import BytesIO
 from flask import session
 import openpyxl
+import shutil
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bardzo-tajny'
@@ -157,6 +158,36 @@ def presence_list():
 
 print("DEBUG - Endpointy Flask:")
 print(app.url_map)
+
+@app.route('/download_backup', methods=['POST'])
+@login_required
+def download_backup():
+    # Tylko admin może pobierać backup
+    if current_user.username != 'admin':
+        flash('Brak dostępu!', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # Pobierz ścieżkę do bazy (zakładamy SQLite)
+    db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
+    backup_path = db_path + ".backup"
+
+    shutil.copy2(db_path, backup_path)
+
+    response = send_file(
+        backup_path,
+        as_attachment=True,
+        download_name='borowki_backup.sqlite',
+        mimetype='application/x-sqlite3'
+    )
+    # (Opcjonalnie) usuń plik backupu po wysłaniu
+    @response.call_on_close
+    def cleanup():
+        try:
+            os.remove(backup_path)
+        except Exception:
+            pass
+
+    return response
 
 @app.route('/')
 def index():
