@@ -166,6 +166,18 @@ def presence_list():
 print("DEBUG - Endpointy Flask:")
 print(app.url_map)
 
+@app.route('/fast_harvest', methods=['GET', 'POST'])
+@login_required
+def fast_harvest():
+    employees = Employee.query.order_by(Employee.name).all()
+    if request.method == 'POST':
+        employee_id = request.form['employee_id']
+        harvest_amount = request.form['harvest_amount']
+        # tutaj dodaj zapis do bazy!
+        flash('Zapisano zbiór!', 'success')
+        return redirect(url_for('fast_harvest'))
+    return render_template('fast_harvest.html', employees=employees)
+
 @app.route('/download_backup', methods=['POST'])
 @login_required
 def download_backup():

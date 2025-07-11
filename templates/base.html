@@ -86,13 +86,13 @@
                             </form>
                         </li>
                         <li class="nav-item">
-                            <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()">🌞/🌙</button>
+                            <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()">🌞</button>
                         </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Zaloguj</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Rejestracja</a></li>
                         <li class="nav-item">
-                            <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()">🌞/🌙</button>
+                            <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()">🌞</button>
                         </li>
                     {% endif %}
                 </ul>
