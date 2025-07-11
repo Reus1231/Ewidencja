@@ -568,35 +568,7 @@ def fast_harvest():
 
     return render_template('fast_harvest.html', employees=employees, summary=summary)
 
-@app.route('/fast_harvest_finish', methods=['GET', 'POST'])
-@login_required
-def fast_harvest_finish():
-    today = date.today()
-    kg_data = session.get('fast_harvest_kg_data', {})
-    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
-    varieties = BerryVariety.query.all()
-    fields = Field.query.all()
 
-    if not kg_data:
-        flash("Najpierw dodaj koszyki!", "warning")
-        return redirect(url_for('fast_harvest'))
-
-    if request.method == 'POST':
-        piece_rate = float(request.form['piece_rate'])
-        variety_id = int(request.form['variety_id'])
-        field_id = int(request.form['field_id'])
-
-        for emp_id, kg_list in kg_data.items():
-            total_kg = round(sum(kg_list), 2)
-            if total_kg > 0:
-                harvest = DailyHarvest(
-                    date=today,
-                    employee_id=int(emp_id),
-                    quantity_kg=total_kg,
-                    variety_id=variety_id,
-                    field_id=field_id,
-                    comment=f"Szybki wpis, sum koszyków: {kg_list}"
-                )
                 db.session.add(harvest)
                 worktype = WorkType.query.filter_by(is_piece_rate=True).first()
                 if worktype:
