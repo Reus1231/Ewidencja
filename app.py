@@ -619,35 +619,31 @@ def fast_harvest_finish():
         variety_id = int(request.form['variety_id'])
         field_id = int(request.form['field_id'])
 
-    for emp_id, kg_list in kg_data.items():
-    total_kg = round(sum(kg_list), 2)
-    if total_kg > 0:
-        harvest = DailyHarvest(
-            date=today,
-            employee_id=int(emp_id),
-            quantity_kg=total_kg,
-            variety_id=variety_id,
-            field_id=field_id,
-            comment=f"Szybki wpis, sum koszyków: {kg_list}"
-            
-        )
-        db.session.add(harvest)
-        worktype = WorkType.query.filter_by(is_piece_rate=True).first()
-        if worktype:
-            entry = Entry(
-                date=today,
-                employee_id=int(emp_id),
-                work_type_id=worktype.id,
-                hours=0,
-                quantity=total_kg,
-                variety_id=variety_id,
-                field_id=field_id,
-                comment=f"Automatyczny wpis z sumy koszyków: {kg_list}",
-                piece_rate=piece_rate
-            )
-            
-            db.session.add(entry)   
-    
+        for emp_id, kg_list in kg_data.items():
+            total_kg = round(sum(kg_list), 2)
+            if total_kg > 0:
+                harvest = DailyHarvest(
+                    date=today,
+                    employee_id=int(emp_id),
+                    quantity_kg=total_kg,
+                    variety_id=variety_id,
+                    field_id=field_id,
+                    comment=f"Szybki wpis, sum koszyków: {kg_list}"
+                )
+                db.session.add(harvest)
+                worktype = WorkType.query.filter_by(is_piece_rate=True).first()
+                if worktype:
+                    entry = Entry(
+                        date=today,
+                        employee_id=int(emp_id),
+                        work_type_id=worktype.id,
+                        hours=0,
+                        quantity=total_kg,
+                        variety_id=variety_id,
+                        field_id=field_id,
+                        comment=f"Automatyczny wpis z sumy koszyków: {kg_list}",
+                        piece_rate=piece_rate
+                    )
                     db.session.add(entry)
         db.session.commit()
         session.pop('fast_harvest_kg_data', None)
@@ -662,52 +658,6 @@ def fast_harvest_finish():
         summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
 
     return render_template('fast_harvest_finish.html', varieties=varieties, fields=fields, summary=summary)
-
-@app.route('/fast_harvest_price', methods=['GET', 'POST'])
-@login_required
-def fast_harvest_price():
-    today = date.today()
-    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
-    kg_dict = session.get('fast_harvest_kg', {})
-    if not kg_dict:
-        flash("Najpierw wpisz kilogramy!", "warning")
-        return redirect(url_for('fast_harvest'))
-    varieties = BerryVariety.query.all()
-    fields = Field.query.all()
-    if request.method == 'POST':
-        piece_rate = float(request.form['piece_rate'])
-        variety_id = int(request.form['variety_id'])
-        field_id = int(request.form['field_id'])
-        for emp_id, kg in kg_dict.items():
-            harvest = DailyHarvest(
-                date=today,
-                employee_id=int(emp_id),
-                quantity_kg=kg,
-                variety_id=variety_id,
-                field_id=field_id,
-                comment="Szybki wpis"
-            )
-            db.session.add(harvest)
-            # Opcjonalnie: wpis do Entry
-            worktype = WorkType.query.filter_by(is_piece_rate=True).first()
-            if worktype:
-                entry = Entry(
-                    date=today,
-                    employee_id=int(emp_id),
-                    work_type_id=worktype.id,
-                    hours=0,
-                    quantity=kg,
-                    variety_id=variety_id,
-                    field_id=field_id,
-                    comment="Automatyczny wpis z szybkiego zbioru",
-                    piece_rate=piece_rate
-                )
-                db.session.add(entry)
-        db.session.commit()
-        session.pop('fast_harvest_kg', None)
-        flash("Zapisano zbiory!", "success")
-        return redirect(url_for('harvests'))
-    return render_template('fast_harvest_price.html', varieties=varieties, fields=fields)
 
 # --- Wpisy Pracy (ENTRY, dynamiczny formularz) ---
 
