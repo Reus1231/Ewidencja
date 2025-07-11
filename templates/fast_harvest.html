@@ -35,7 +35,17 @@
     <tr>
       <td>{{ item.name }}</td>
       <td>{{ item.total }}</td>
-      <td>{{ item.details|join(', ') }}</td>
+      <td>
+        {% for idx, kg in item.details %}
+          <form method="post" style="display:inline;">
+            <input type="hidden" name="remove_emp_id" value="{{ item.id }}">
+            <input type="hidden" name="remove_idx" value="{{ idx }}">
+            {{ kg|round(2) }}
+            <button type="submit" class="btn btn-sm btn-danger" title="Usuń koszyk">&times;</button>
+          </form>
+          {% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </td>
     </tr>
   {% endfor %}
   </tbody>
