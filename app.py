@@ -620,7 +620,7 @@ def fast_harvest_finish():
         field_id = int(request.form['field_id'])
 
         for emp_id, kg_list in kg_data.items():
-            total_kg = sum(kg_list)
+            total_kg = round(sum(kg_list), 2)
             if total_kg > 0:
                 harvest = DailyHarvest(
                     date=today,
@@ -650,12 +650,12 @@ def fast_harvest_finish():
         flash("Zapisano sumy zbiorów!", "success")
         return redirect(url_for('harvests'))
 
-    # Podgląd sum
     summary = []
     for emp in employees:
         emp_id = str(emp.id)
-        total = sum(kg_data.get(emp_id, []))
-        summary.append({'name': emp.name, 'total': total, 'details': kg_data.get(emp_id, [])})
+        details = list(enumerate(kg_data.get(emp_id, [])))
+        total = round(sum(kg_data.get(emp_id, [])), 2)
+        summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
 
     return render_template('fast_harvest_finish.html', varieties=varieties, fields=fields, summary=summary)
 
