@@ -608,47 +608,6 @@ def delete_daily_harvest(harvest_id):
     flash('Usunięto zbiór i powiązany wpis akordowy.', 'success')
     return redirect(url_for('harvests'))
     
-@app.route('/fast_harvest', methods=['GET', 'POST'])
-@login_required
-def fast_harvest():
-    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
-    if 'fast_harvest_kg_data' not in session:
-        session['fast_harvest_kg_data'] = {}
-    kg_data = session['fast_harvest_kg_data']
-
-    # Obsługa usuwania koszyka
-    if request.method == 'POST' and 'remove_emp_id' in request.form and 'remove_idx' in request.form:
-        emp_id = request.form['remove_emp_id']
-        idx = int(request.form['remove_idx'])
-        if emp_id in kg_data and 0 <= idx < len(kg_data[emp_id]):
-            del kg_data[emp_id][idx]
-            if not kg_data[emp_id]:
-                del kg_data[emp_id]
-            session['fast_harvest_kg_data'] = kg_data
-        return redirect(url_for('fast_harvest'))
-
-    # Dodawanie koszyków (normalne zachowanie)
-    if request.method == 'POST':
-        for emp in employees:
-            kg = request.form.get(f'kg_{emp.id}')
-            if kg and float(kg) > 0:
-                emp_id = str(emp.id)
-                if emp_id not in kg_data:
-                    kg_data[emp_id] = []
-                kg_data[emp_id].append(float(kg))
-        session['fast_harvest_kg_data'] = kg_data
-        flash("Dodano koszyki. Możesz dodać kolejne albo kliknąć 'Koniec — zapisz sumy'", "info")
-        return redirect(url_for('fast_harvest'))
-
-    summary = []
-    for emp in employees:
-        emp_id = str(emp.id)
-        details = list(enumerate(kg_data.get(emp_id, [])))
-        total = round(sum(kg_data.get(emp_id, [])), 2)
-        summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
-
-    return render_template('fast_harvest.html', employees=employees, summary=summary)
-
 @app.route('/fast_harvest_finish', methods=['GET', 'POST'])
 @login_required
 def fast_harvest_finish():

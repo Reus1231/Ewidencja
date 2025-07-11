@@ -8,7 +8,7 @@
     <form method="post" class="row g-3 align-items-center">
       <div class="col-md-6">
         <label for="employee-select" class="form-label">Dodaj koszyk wybranemu pracownikowi:</label>
-        <select id="employee-select" name="selected_employee_id" class="form-control" style="width:100%">
+        <select id="employee-select" name="selected_employee_id" class="form-control" style="width:100%" required>
           <option></option>
           {% for emp in employees %}
             <option value="{{ emp.id }}">{{ emp.id }} - {{ emp.name }}</option>
@@ -46,7 +46,7 @@
     {% endfor %}
     </tbody>
   </table>
-  <button type="submit" name="action" value="add_bulk" class="btn btn-primary">Dodaj koszyki (wszystkich)</button>
+  <button type="submit" name="action" value="add_bulk" class="btn btn-primary">Dodaj koszyki (wszyscy)</button>
 </form>
 
 <h3 class="mt-4">Podsumowanie dnia:</h3>
