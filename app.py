@@ -525,7 +525,7 @@ def delete_daily_harvest(harvest_id):
     flash('Usunięto zbiór.', 'success')
     return redirect(url_for('harvests'))
     
-    @app.route('/fast_harvest', methods=['GET', 'POST'])
+@app.route('/fast_harvest', methods=['GET', 'POST'])
 @login_required
 def fast_harvest():
     today = date.today()
