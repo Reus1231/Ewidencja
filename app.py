@@ -1,15 +1,22 @@
 import os
-from flask import send_file, flash, redirect, url_for, Flask, render_template, request, redirect, url_for, flash, send_file
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_required, current_user LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, date
-from forms import LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm, WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
-from flask import send_file, request
-from io import BytesIO
-from flask import session
-import openpyxl
 import shutil
+from datetime import datetime, date
+from io import BytesIO
+
+from flask import (
+    Flask, render_template, request, redirect, url_for, flash, send_file, session
+)
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import (
+    LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+)
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from forms import (
+    LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm,
+    WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
+)
+import openpyxl
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bardzo-tajny'
