@@ -7,6 +7,7 @@ from datetime import datetime, date
 from forms import LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm, WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
 from flask import send_file, request
 from io import BytesIO
+from flask import session
 import openpyxl
 
 app = Flask(__name__)
@@ -89,6 +90,13 @@ class Presence(db.Model):
     time_in = db.Column(db.Time, nullable=False)
     time_out = db.Column(db.Time, nullable=True)
     comment = db.Column(db.Text, nullable=True)
+    
+class DailySettings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, unique=True)
+    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
+    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
+    # Możesz dodać inne pola, jeśli chcesz
 
     employee = db.relationship('Employee')
 
@@ -516,6 +524,71 @@ def delete_daily_harvest(harvest_id):
     db.session.commit()
     flash('Usunięto zbiór.', 'success')
     return redirect(url_for('harvests'))
+    
+    @app.route('/fast_harvest', methods=['GET', 'POST'])
+@login_required
+def fast_harvest():
+    today = date.today()
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    if request.method == 'POST':
+        # Zapisz kilogramy do sesji
+        kg_dict = {}
+        for emp in employees:
+            kg = request.form.get(f'kg_{emp.id}')
+            if kg and float(kg) > 0:
+                kg_dict[str(emp.id)] = float(kg)
+        if not kg_dict:
+            flash("Nie wpisano żadnych kilogramów!", "warning")
+            return redirect(url_for('fast_harvest'))
+        session['fast_harvest_kg'] = kg_dict
+        return redirect(url_for('fast_harvest_price'))
+    return render_template('fast_harvest.html', employees=employees)
+
+@app.route('/fast_harvest_price', methods=['GET', 'POST'])
+@login_required
+def fast_harvest_price():
+    today = date.today()
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    kg_dict = session.get('fast_harvest_kg', {})
+    if not kg_dict:
+        flash("Najpierw wpisz kilogramy!", "warning")
+        return redirect(url_for('fast_harvest'))
+    varieties = BerryVariety.query.all()
+    fields = Field.query.all()
+    if request.method == 'POST':
+        piece_rate = float(request.form['piece_rate'])
+        variety_id = int(request.form['variety_id'])
+        field_id = int(request.form['field_id'])
+        for emp_id, kg in kg_dict.items():
+            harvest = DailyHarvest(
+                date=today,
+                employee_id=int(emp_id),
+                quantity_kg=kg,
+                variety_id=variety_id,
+                field_id=field_id,
+                comment="Szybki wpis"
+            )
+            db.session.add(harvest)
+            # Opcjonalnie: wpis do Entry
+            worktype = WorkType.query.filter_by(is_piece_rate=True).first()
+            if worktype:
+                entry = Entry(
+                    date=today,
+                    employee_id=int(emp_id),
+                    work_type_id=worktype.id,
+                    hours=0,
+                    quantity=kg,
+                    variety_id=variety_id,
+                    field_id=field_id,
+                    comment="Automatyczny wpis z szybkiego zbioru",
+                    piece_rate=piece_rate
+                )
+                db.session.add(entry)
+        db.session.commit()
+        session.pop('fast_harvest_kg', None)
+        flash("Zapisano zbiory!", "success")
+        return redirect(url_for('harvests'))
+    return render_template('fast_harvest_price.html', varieties=varieties, fields=fields)
 
 # --- Wpisy Pracy (ENTRY, dynamiczny formularz) ---
 

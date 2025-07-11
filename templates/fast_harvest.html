@@ -1,0 +1,17 @@
+<h2>Szybki wpis zbiorów (Krok 1)</h2>
+<p>Wpisz ilość kilogramów dla każdego pracownika. Na końcu kliknij "Koniec".</p>
+<form method="post">
+  <table>
+    <tr>
+      <th>Pracownik</th>
+      <th>Kg</th>
+    </tr>
+    {% for emp in employees %}
+    <tr>
+      <td>{{ emp.name }}</td>
+      <td><input type="number" name="kg_{{ emp.id }}" min="0" step="0.01"></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <button type="submit">Koniec</button>
+</form>

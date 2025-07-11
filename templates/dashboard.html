@@ -23,5 +23,19 @@
     </a>
   </div>
   {% endfor %}
+
+  <!-- NOWY KAFELEK: Szybki wpis zbiorów -->
+  <div class="col">
+    <a href="{{ url_for('fast_harvest') }}" class="text-decoration-none text-white">
+      <div class="card custom-red shadow h-100 text-center rounded-4 border-0">
+        <div class="card-body">
+          <i class="fas fa-bolt fa-3x mb-2"></i>
+          <h5 class="card-title mt-2">Szybki wpis zbiorów</h5>
+          <p class="card-text">Wpisz zbiory dla wielu pracowników naraz</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
 </div>
 {% endblock %}
