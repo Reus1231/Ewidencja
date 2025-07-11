@@ -489,6 +489,34 @@ def harvests():
     harvests = DailyHarvest.query.order_by(DailyHarvest.date.desc()).all()
     return render_template('daily_harvest_list.html', harvests=harvests)
 
+@app.route('/clear_day', methods=['POST'])
+@login_required
+def clear_day():
+    # (opcjonalnie) ogranicz dla admina:
+    # if current_user.username != 'admin':
+    #     flash('Brak dostępu!', 'danger')
+    #     return redirect(url_for('harvests'))
+
+    date_str = request.form.get('clear_date')
+    if not date_str:
+        flash('Nie podano daty!', 'danger')
+        return redirect(url_for('harvests'))
+
+    try:
+        clear_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        flash('Błędny format daty!', 'danger')
+        return redirect(url_for('harvests'))
+
+    # Usuń Entry (powiązane z tym dniem)
+    entry_count = Entry.query.filter(Entry.date == clear_date).delete(synchronize_session=False)
+    # Usuń DailyHarvest
+    harvest_count = DailyHarvest.query.filter(DailyHarvest.date == clear_date).delete(synchronize_session=False)
+    db.session.commit()
+
+    flash(f"Usunięto {harvest_count} zbiorów i {entry_count} wpisów pracy dla dnia {clear_date}.", "success")
+    return redirect(url_for('harvests'))
+
 @app.route('/edit_daily_harvest/<int:harvest_id>', methods=['GET', 'POST'])
 @login_required
 def edit_daily_harvest(harvest_id):
@@ -513,9 +541,21 @@ def edit_daily_harvest(harvest_id):
 @login_required
 def delete_daily_harvest(harvest_id):
     harvest = DailyHarvest.query.get_or_404(harvest_id)
+    
+    # Usuń powiązane wpisy Entry (po dacie, pracowniku, odmianie, polu i ilości)
+    related_entries = Entry.query.filter_by(
+        date=harvest.date,
+        employee_id=harvest.employee_id,
+        variety_id=harvest.variety_id,
+        field_id=harvest.field_id,
+        quantity=harvest.quantity_kg
+    ).all()
+    for entry in related_entries:
+        db.session.delete(entry)
+
     db.session.delete(harvest)
     db.session.commit()
-    flash('Usunięto zbiór.', 'success')
+    flash('Usunięto zbiór i powiązany wpis akordowy.', 'success')
     return redirect(url_for('harvests'))
     
 @app.route('/fast_harvest', methods=['GET', 'POST'])
