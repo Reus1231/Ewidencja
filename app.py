@@ -85,7 +85,7 @@ class Entry(db.Model):
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=True)
     field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=True)
     comment = db.Column(db.Text, nullable=True)
-    piece_rate = db.Column(db.Float, nullable=True)  # <-- To jest pole do stawki akordowej
+    piece_rate = db.Column(db.Float, nullable=True)
 
     work_type = db.relationship('WorkType')
     variety = db.relationship('BerryVariety')
@@ -98,29 +98,12 @@ class Presence(db.Model):
     time_in = db.Column(db.Time, nullable=False)
     time_out = db.Column(db.Time, nullable=True)
     comment = db.Column(db.Text, nullable=True)
-    
+
 class DailySettings(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, nullable=False, unique=True)
     field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
-
-
-@app.context_processor
-def inject_now():
-    return {'current_year': datetime.now().year}
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-with app.app_context():
-    db.create_all()
-    if not User.query.filter_by(username='admin').first():
-        admin = User(username='admin')
-        admin.set_password('admin')
-        db.session.add(admin)
-        db.session.commit()
 
 @app.context_processor
 def inject_now():
@@ -163,49 +146,153 @@ def presence_list():
     presences = Presence.query.order_by(Presence.date.desc(), Presence.time_in.desc()).all()
     return render_template('presence_list.html', presences=presences)
 
-print("DEBUG - Endpointy Flask:")
-print(app.url_map)
-
+# --- POPRAWIONY I JEDYNY ENDPOINT FAST HARVEST ---
 @app.route('/fast_harvest', methods=['GET', 'POST'])
 @login_required
 def fast_harvest():
-    employees = Employee.query.order_by(Employee.name).all()
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    today = date.today()
+    kg_data = session.get('fast_harvest_kg_data', {})
+
     if request.method == 'POST':
-        employee_id = request.form['employee_id']
-        harvest_amount = request.form['harvest_amount']
-        # tutaj dodaj zapis do bazy!
-        flash('Zapisano zbiór!', 'success')
+        action = request.form.get('action')
+        # Szybkie dodanie koszyka wybranemu pracownikowi przez Select2
+        if action == 'add_selected':
+            emp_id = request.form.get('selected_employee_id')
+            kg = request.form.get('selected_employee_kg')
+            if emp_id and kg:
+                try:
+                    kg_val = float(kg)
+                    if kg_val > 0:
+                        emp_id_str = str(emp_id)
+                        if emp_id_str not in kg_data:
+                            kg_data[emp_id_str] = []
+                        kg_data[emp_id_str].append(kg_val)
+                        session['fast_harvest_kg_data'] = kg_data
+                        flash('Dodano koszyk!', 'success')
+                    else:
+                        flash('Podaj wagę większą od 0!', 'danger')
+                except ValueError:
+                    flash('Błędna wartość kg.', 'danger')
+            else:
+                flash('Wybierz pracownika i podaj ilość!', 'danger')
+        # Zbiorczy wpis z tabeli
+        elif action == 'add_bulk':
+            for emp in employees:
+                kg_str = request.form.get(f'kg_{emp.id}')
+                if kg_str:
+                    try:
+                        kg_val = float(kg_str)
+                        if kg_val > 0:
+                            emp_id_str = str(emp.id)
+                            if emp_id_str not in kg_data:
+                                kg_data[emp_id_str] = []
+                            kg_data[emp_id_str].append(kg_val)
+                            session['fast_harvest_kg_data'] = kg_data
+                    except ValueError:
+                        flash(f'Nieprawidłowa liczba dla {emp.name}', 'danger')
+            flash('Dodano koszyki!', 'success')
+        # Usuwanie koszyka
+        elif 'remove_emp_id' in request.form and 'remove_idx' in request.form:
+            emp_id = request.form.get('remove_emp_id')
+            idx = int(request.form.get('remove_idx'))
+            if emp_id in kg_data and 0 <= idx < len(kg_data[emp_id]):
+                kg_data[emp_id].pop(idx)
+                session['fast_harvest_kg_data'] = kg_data
+                flash('Usunięto koszyk.', 'info')
         return redirect(url_for('fast_harvest'))
-    return render_template('fast_harvest.html', employees=employees)
+
+    # Przygotuj podsumowanie do tabeli
+    summary = []
+    for emp in employees:
+        emp_id = str(emp.id)
+        details = list(enumerate(kg_data.get(emp_id, [])))
+        total = round(sum(kg_data.get(emp_id, [])), 2)
+        summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
+
+    return render_template('fast_harvest.html', employees=employees, summary=summary)
+
+@app.route('/fast_harvest_finish', methods=['GET', 'POST'])
+@login_required
+def fast_harvest_finish():
+    today = date.today()
+    kg_data = session.get('fast_harvest_kg_data', {})
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    varieties = BerryVariety.query.all()
+    fields = Field.query.all()
+
+    if not kg_data:
+        flash("Najpierw dodaj koszyki!", "warning")
+        return redirect(url_for('fast_harvest'))
+
+    if request.method == 'POST':
+        piece_rate = float(request.form['piece_rate'])
+        variety_id = int(request.form['variety_id'])
+        field_id = int(request.form['field_id'])
+
+        for emp_id, kg_list in kg_data.items():
+            total_kg = round(sum(kg_list), 2)
+            if total_kg > 0:
+                harvest = DailyHarvest(
+                    date=today,
+                    employee_id=int(emp_id),
+                    quantity_kg=total_kg,
+                    variety_id=variety_id,
+                    field_id=field_id,
+                    comment=f"Szybki wpis, sum koszyków: {kg_list}"
+                )
+                db.session.add(harvest)
+                worktype = WorkType.query.filter_by(is_piece_rate=True).first()
+                if worktype:
+                    entry = Entry(
+                        date=today,
+                        employee_id=int(emp_id),
+                        work_type_id=worktype.id,
+                        hours=0,
+                        quantity=total_kg,
+                        variety_id=variety_id,
+                        field_id=field_id,
+                        comment=f"Automatyczny wpis z sumy koszyków: {kg_list}",
+                        piece_rate=piece_rate
+                    )
+                    db.session.add(entry)
+        db.session.commit()
+        session.pop('fast_harvest_kg_data', None)
+        flash("Zapisano sumy zbiorów!", "success")
+        return redirect(url_for('harvests'))
+
+    summary = []
+    for emp in employees:
+        emp_id = str(emp.id)
+        details = list(enumerate(kg_data.get(emp_id, [])))
+        total = round(sum(kg_data.get(emp_id, [])), 2)
+        summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
+
+    return render_template('fast_harvest_finish.html', varieties=varieties, fields=fields, summary=summary)
+
+# ---- RESZTA TWOICH ENDPOINTÓW ----
 
 @app.route('/download_backup', methods=['POST'])
 @login_required
 def download_backup():
-    # Tylko admin może pobierać backup
     if current_user.username != 'Admin':
         flash('Brak dostępu!', 'danger')
         return redirect(url_for('dashboard'))
-
-    # Pobierz ścieżkę do bazy (zakładamy SQLite)
     db_path = app.config['SQLALCHEMY_DATABASE_URI'].replace('sqlite:///', '')
     backup_path = db_path + ".backup"
-
     shutil.copy2(db_path, backup_path)
-
     response = send_file(
         backup_path,
         as_attachment=True,
         download_name='borowki_backup.sqlite',
         mimetype='application/x-sqlite3'
     )
-    # (Opcjonalnie) usuń plik backupu po wysłaniu
     @response.call_on_close
     def cleanup():
         try:
             os.remove(backup_path)
         except Exception:
             pass
-
     return response
 
 @app.route('/')
@@ -278,6 +365,7 @@ def logout():
 def dashboard():
     return render_template('dashboard.html')
 
+# --- PRACOWNICY ---
 @app.route('/employees')
 @login_required
 def employees():
@@ -343,6 +431,7 @@ def delete_employee(employee_id):
     flash('Usunięto pracownika.', 'success')
     return redirect(url_for('employees'))
 
+# --- POLA ---
 @app.route('/fields')
 @login_required
 def fields():
@@ -382,6 +471,7 @@ def delete_field(field_id):
     flash('Usunięto pole.', 'success')
     return redirect(url_for('fields'))
 
+# --- ODMIANY ---
 @app.route('/varieties')
 @login_required
 def varieties():
@@ -422,6 +512,7 @@ def delete_variety(variety_id):
     flash('Usunięto odmianę.', 'success')
     return redirect(url_for('varieties'))
 
+# --- TYPY PRACY ---
 @app.route('/work_types')
 @login_required
 def work_types():
@@ -467,6 +558,7 @@ def delete_work_type(work_type_id):
     flash('Usunięto typ pracy.', 'success')
     return redirect(url_for('work_types'))
 
+# --- ZBIORY DZIENNE ---
 @app.route('/add_daily_harvest', methods=['GET', 'POST'])
 @login_required
 def add_daily_harvest():
@@ -542,28 +634,18 @@ def harvests():
 @app.route('/clear_day', methods=['POST'])
 @login_required
 def clear_day():
-    # (opcjonalnie) ogranicz dla admina:
-    # if current_user.username != 'admin':
-    #     flash('Brak dostępu!', 'danger')
-    #     return redirect(url_for('harvests'))
-
     date_str = request.form.get('clear_date')
     if not date_str:
         flash('Nie podano daty!', 'danger')
         return redirect(url_for('harvests'))
-
     try:
         clear_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
         flash('Błędny format daty!', 'danger')
         return redirect(url_for('harvests'))
-
-    # Usuń Entry (powiązane z tym dniem)
     entry_count = Entry.query.filter(Entry.date == clear_date).delete(synchronize_session=False)
-    # Usuń DailyHarvest
     harvest_count = DailyHarvest.query.filter(DailyHarvest.date == clear_date).delete(synchronize_session=False)
     db.session.commit()
-
     flash(f"Usunięto {harvest_count} zbiorów i {entry_count} wpisów pracy dla dnia {clear_date}.", "success")
     return redirect(url_for('harvests'))
 
@@ -591,8 +673,6 @@ def edit_daily_harvest(harvest_id):
 @login_required
 def delete_daily_harvest(harvest_id):
     harvest = DailyHarvest.query.get_or_404(harvest_id)
-    
-    # Usuń powiązane wpisy Entry (po dacie, pracowniku, odmianie, polu i ilości)
     related_entries = Entry.query.filter_by(
         date=harvest.date,
         employee_id=harvest.employee_id,
@@ -602,72 +682,12 @@ def delete_daily_harvest(harvest_id):
     ).all()
     for entry in related_entries:
         db.session.delete(entry)
-
     db.session.delete(harvest)
     db.session.commit()
     flash('Usunięto zbiór i powiązany wpis akordowy.', 'success')
     return redirect(url_for('harvests'))
-    
-@app.route('/fast_harvest_finish', methods=['GET', 'POST'])
-@login_required
-def fast_harvest_finish():
-    today = date.today()
-    kg_data = session.get('fast_harvest_kg_data', {})
-    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
-    varieties = BerryVariety.query.all()
-    fields = Field.query.all()
 
-    if not kg_data:
-        flash("Najpierw dodaj koszyki!", "warning")
-        return redirect(url_for('fast_harvest'))
-
-    if request.method == 'POST':
-        piece_rate = float(request.form['piece_rate'])
-        variety_id = int(request.form['variety_id'])
-        field_id = int(request.form['field_id'])
-
-        for emp_id, kg_list in kg_data.items():
-            total_kg = round(sum(kg_list), 2)
-            if total_kg > 0:
-                harvest = DailyHarvest(
-                    date=today,
-                    employee_id=int(emp_id),
-                    quantity_kg=total_kg,
-                    variety_id=variety_id,
-                    field_id=field_id,
-                    comment=f"Szybki wpis, sum koszyków: {kg_list}"
-                )
-                db.session.add(harvest)
-                worktype = WorkType.query.filter_by(is_piece_rate=True).first()
-                if worktype:
-                    entry = Entry(
-                        date=today,
-                        employee_id=int(emp_id),
-                        work_type_id=worktype.id,
-                        hours=0,
-                        quantity=total_kg,
-                        variety_id=variety_id,
-                        field_id=field_id,
-                        comment=f"Automatyczny wpis z sumy koszyków: {kg_list}",
-                        piece_rate=piece_rate
-                    )
-                    db.session.add(entry)
-        db.session.commit()
-        session.pop('fast_harvest_kg_data', None)
-        flash("Zapisano sumy zbiorów!", "success")
-        return redirect(url_for('harvests'))
-
-    summary = []
-    for emp in employees:
-        emp_id = str(emp.id)
-        details = list(enumerate(kg_data.get(emp_id, [])))
-        total = round(sum(kg_data.get(emp_id, [])), 2)
-        summary.append({'id': emp_id, 'name': emp.name, 'total': total, 'details': details})
-
-    return render_template('fast_harvest_finish.html', varieties=varieties, fields=fields, summary=summary)
-
-# --- Wpisy Pracy (ENTRY, dynamiczny formularz) ---
-
+# --- WPISY PRACY (ENTRY) ---
 @app.route('/entries')
 @login_required
 def entries():
@@ -799,6 +819,7 @@ def delete_entry(entry_id):
     flash('Usunięto wpis pracy.', 'success')
     return redirect(url_for('entries'))
 
+# --- RAPORTY ---
 @app.route('/employee_reports', methods=['GET'])
 @login_required
 def employee_reports():
@@ -1035,10 +1056,7 @@ def generate_report():
             download_name="wpisy_pracy.xlsx",
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-    return render_template('generate_report.html', employees=employees)    
-
-print("DEBUG - Endpointy Flask:")
-print(app.url_map)
+    return render_template('generate_report.html', employees=employees)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
