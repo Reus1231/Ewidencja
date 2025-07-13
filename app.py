@@ -1060,6 +1060,7 @@ def generate_report():
     
 @app.route('/harvest_overview')
 def harvest_overview():
+    return "Strona chwilowo niedostępna", 403
     employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
     # Sumy zbiorów dla każdego pracownika (wszystkie dni)
     summary = []
