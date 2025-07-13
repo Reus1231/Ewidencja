@@ -3,16 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Podsumowanie pracownika (zbiór + godziny)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- ważne dla responsywności -->
     <style>
-        body { font-family: sans-serif; background: #fafafa; }
-        .container { max-width: 900px; margin: 30px auto; }
-        h2 { color: #b71c1c; }
-        select { font-size: 1.1em; padding: 8px; margin-bottom: 15px; }
-        table { border-collapse: collapse; width: 100%; margin-top: 2em; }
-        th, td { border: 1px solid #bbb; padding: 8px; text-align: center;}
-        th { background: #d32f2f; color: #fff;}
+        body { font-family: sans-serif; background: #fafafa; margin: 0; }
+        .container { max-width: 900px; margin: 10px auto; padding: 6px; }
+        h2 { color: #b71c1c; font-size: 1.3em; margin-bottom: 0.4em; }
+        select { font-size: 1.1em; padding: 10px; margin-bottom: 18px; width: 100%; max-width: 350px; }
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
+        table { border-collapse: collapse; width: 100%; min-width: 550px; margin-top: 1em; background: #fff; }
+        th, td { border: 1px solid #bbb; padding: 12px 6px; text-align: center; font-size: 1em; }
+        th { background: #d32f2f; color: #fff; font-size: 1em; }
         tr:nth-child(even) { background: #f9f9f9; }
         .sum-row { font-weight: bold; background: #ffe0b2; }
+        @media (max-width: 600px) {
+            h2 { font-size: 1.1em; }
+            th, td { font-size: 0.95em; padding: 7px 2px; }
+            .container { padding: 2px; }
+            table { min-width: 430px; }
+        }
+        @media (max-width: 450px) {
+            .table-container { padding: 0 0; }
+            th, td { font-size: 0.9em; padding: 4px 1px; }
+            select { font-size: 1em; padding: 8px; }
+        }
     </style>
 </head>
 <body>
@@ -29,9 +45,9 @@
             {% endfor %}
         </select>
     </form>
-
     {% if selected_employee %}
-        <h3>Pracownik: {{ selected_employee.name }}</h3>
+        <h3 style="margin-bottom:0.2em;">Pracownik: {{ selected_employee.name }}</h3>
+        <div class="table-container">
         <table>
             <tr>
                 <th>Data</th>
@@ -64,6 +80,7 @@
                 <td>{{ total_all_sum }} zł</td>
             </tr>
         </table>
+        </div>
     {% else %}
         <p>Wybierz pracownika z listy powyżej.</p>
     {% endif %}
