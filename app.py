@@ -1058,7 +1058,7 @@ def generate_report():
         )
     return render_template('generate_report.html', employees=employees)
     
-@a@app.route('/harvest_overview')
+@app.route('/harvest_overview')
 def harvest_overview():
     employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
     summary = []
