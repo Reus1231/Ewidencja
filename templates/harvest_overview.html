@@ -1,24 +1,33 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Wyniki zbiorów wszystkich pracowników</h2>
-<table class="table table-striped">
-    <thead>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Podsumowanie zbiorów</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-top: 2em;}
+        th, td { border: 1px solid #aaa; padding: 8px; text-align: center;}
+        th { background: #d32f2f; color: #fff;}
+    </style>
+</head>
+<body>
+    <h2>Podsumowanie zbiorów</h2>
+    <table>
         <tr>
-            <th>Imię i nazwisko</th>
-            <th>Suma zbiorów (kg)</th>
-            <th>Szczegóły</th>
+            <th>Pracownik</th>
+            <th>Łącznie kg</th>
+            <th>Suma godzin</th>
+            <th>Wynagrodzenie za godziny</th>
+            <th>Wynagrodzenie akordowe</th>
         </tr>
-    </thead>
-    <tbody>
-        {% for emp in summary %}
+        {% for row in summary %}
         <tr>
-            <td>{{ emp.name }}</td>
-            <td>{{ emp.total }}</td>
-            <td>
-                <a href="{{ url_for('harvest_employee', employee_id=emp.id) }}" class="btn btn-info btn-sm">Szczegóły</a>
-            </td>
+            <td><a href="{{ url_for('harvest_employee', employee_id=row.id) }}">{{ row.name }}</a></td>
+            <td>{{ row.total_kg }}</td>
+            <td>{{ row.total_hours }}</td>
+            <td>{{ row.hourly_pay }} zł</td>
+            <td>{{ row.piece_pay }} zł</td>
         </tr>
         {% endfor %}
-    </tbody>
-</table>
-{% endblock %}
+    </table>
+</body>
+</html>

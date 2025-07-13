@@ -1058,15 +1058,46 @@ def generate_report():
         )
     return render_template('generate_report.html', employees=employees)
     
-@app.route('/harvest_overview')
+@a@app.route('/harvest_overview')
 def harvest_overview():
-    return "Strona chwilowo niedostępna", 403
     employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
-    # Sumy zbiorów dla każdego pracownika (wszystkie dni)
     summary = []
+
     for emp in employees:
+        # SUMA KILOGRAMÓW
         total_kg = db.session.query(db.func.sum(DailyHarvest.quantity_kg)).filter_by(employee_id=emp.id).scalar() or 0
-        summary.append({'id': emp.id, 'name': emp.name, 'total': round(total_kg, 2)})
+
+        # SUMA GODZIN
+        total_hours = db.session.query(db.func.sum(Entry.hours)).filter(
+            Entry.employee_id == emp.id,
+            Entry.hours > 0
+        ).scalar() or 0
+
+        # ZAROBEK AKORDOWY (z Entry.quantity, piece_rate i ewentualnie modyfikatorem za odmianę)
+        piece_entries = Entry.query.filter(
+            Entry.employee_id == emp.id,
+            Entry.quantity > 0
+        ).all()
+        total_piece_pay = 0
+        for e in piece_entries:
+            modifier = 1.0
+            if e.variety and hasattr(e.variety, "piece_rate_modifier"):
+                modifier = e.variety.piece_rate_modifier
+            rate = e.piece_rate if e.piece_rate is not None else emp.piece_rate
+            total_piece_pay += (e.quantity or 0) * (rate or 0) * modifier
+
+        # ZAROBEK GODZINOWY
+        total_hourly_pay = (total_hours or 0) * (emp.hourly_rate or 0)
+
+        summary.append({
+            'id': emp.id,
+            'name': emp.name,
+            'total_kg': round(total_kg, 2),
+            'total_hours': round(total_hours, 2),
+            'hourly_pay': round(total_hourly_pay, 2),
+            'piece_pay': round(total_piece_pay, 2)
+        })
+
     return render_template('harvest_overview.html', summary=summary)
 
 @app.route('/harvest_employee/<int:employee_id>')
