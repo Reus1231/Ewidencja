@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Szybki wpis zbiorów</title>
+    <style>
+        body { font-size: 1.2em; background: #fff; margin:0; }
+        .panel { max-width: 420px; margin: 30px auto; padding: 18px; border-radius: 10px; box-shadow: 0 2px 8px #eee; }
+        h2 { text-align: center; margin-bottom: 15px; }
+        label { display: block; margin-top: 17px; font-weight: 500; }
+        input, select { width: 100%; font-size: 1.1em; padding: 10px; margin-top: 4px; border-radius: 6px; border: 1px solid #ddd; }
+        button { width: 100%; margin-top: 24px; padding: 15px; font-size: 1.25em; background: #b71c1c; color: #fff; border: none; border-radius: 5px; font-weight: 700; letter-spacing: 0.5px; }
+        .success { color: green; margin-top: 18px; text-align: center; }
+        .last-entries { margin-top: 30px; font-size: 0.96em; }
+        .last-entries ul { padding-left: 18px; margin: 0; }
+    </style>
+</head>
+<body>
+<div class="panel">
+    <h2>Szybki wpis zbiorów</h2>
+    <form method="POST">
+        <label>Data:
+            <input type="date" name="data" value="{{ today }}" required>
+        </label>
+        <label>Pracownik:
+            <select name="employee_id" required>
+                {% for p in employees %}
+                    <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Pole:
+            <select name="field_id" required>
+                {% for pole in fields %}
+                    <option value="{{ pole.id }}">{{ pole.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Odmiana:
+            <select name="variety_id" required>
+                {% for odm in varieties %}
+                    <option value="{{ odm.id }}">{{ odm.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Zebrano (kg):
+            <input type="number" step="0.01" min="0" name="waga" required autofocus>
+        </label>
+        <button type="submit">Zapisz</button>
+    </form>
+    {% if success %}
+        <div class="success">Wpis dodany!</div>
+    {% endif %}
+    {% if last_entries %}
+        <div class="last-entries">
+            <b>Ostatnie wpisy:</b>
+            <ul>
+                {% for entry in last_entries %}
+                <li>
+                    {{ entry.employee.name }}, {{ entry.date }}, {{ entry.field.name }}, {{ entry.variety.name }}, {{ entry.quantity_kg }} kg
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+</div>
+</body>
+</html>

@@ -1082,5 +1082,74 @@ def harvest_employee(employee_id):
         selected_date = None
     return render_template('harvest_employee.html', employee=employee, harvests=harvests, selected_date=selected_date)
 
+@app.route('/fast_entry', methods=['GET', 'POST'])
+@login_required
+def fast_entry():
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    fields = Field.query.order_by(Field.name).all()
+    varieties = BerryVariety.query.order_by(BerryVariety.name).all()
+    today = date.today().isoformat()
+    success = False
+
+    if request.method == 'POST':
+        date_selected = request.form['data']
+        employee_id = int(request.form['employee_id'])
+        field_id = int(request.form['field_id'])
+        variety_id = int(request.form['variety_id'])
+        waga = float(request.form['waga'])
+
+        # domyślny piece_rate
+        employee = Employee.query.get(employee_id)
+        piece_rate = employee.piece_rate
+
+        # Dodaj rekord zbioru
+        harvest = DailyHarvest(
+            date=datetime.strptime(date_selected, '%Y-%m-%d').date(),
+            employee_id=employee_id,
+            quantity_kg=waga,
+            variety_id=variety_id,
+            field_id=field_id,
+            comment="Szybki wpis"
+        )
+        db.session.add(harvest)
+        db.session.commit()
+
+        # Dodaj automatycznie wpis pracy (jeśli typ akordowy istnieje)
+        worktype = WorkType.query.filter_by(is_piece_rate=True).first()
+        if worktype:
+            entry = Entry(
+                date=datetime.strptime(date_selected, '%Y-%m-%d').date(),
+                employee_id=employee_id,
+                work_type_id=worktype.id,
+                hours=0,
+                quantity=waga,
+                variety_id=variety_id,
+                field_id=field_id,
+                comment='(Automatyczny szybki wpis zbioru)',
+                piece_rate=piece_rate
+            )
+            db.session.add(entry)
+            db.session.commit()
+
+        success = True
+
+    # Pokaż 5 ostatnich wpisów
+    last_entries = (
+        DailyHarvest.query
+        .order_by(DailyHarvest.id.desc())
+        .limit(5)
+        .all()
+    )
+
+    return render_template(
+        'fast_entry.html',
+        employees=employees,
+        fields=fields,
+        varieties=varieties,
+        today=today,
+        success=success,
+        last_entries=last_entries
+    )
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

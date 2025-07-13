@@ -79,12 +79,13 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('harvests') }}">Dzienne zbiory</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('entries') }}">Wpisy pracy</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('employee_reports') }}">Raporty</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Wyloguj</a></li>
+						<li><a href="{{ url_for('fast_entry') }}">Szybki wpis zbiorów</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('daily_report') }}">Raport dzienny</a></li>
                         <li class="nav-item"><a class="nav-link" href="{{ url_for('presence_list') }}">Obecność</a></li>
                         <li class="nav-item">
                             <form action="{{ url_for('download_backup') }}" method="post" style="display:inline;">
                                 <button type="submit" class="btn btn-warning">Pobierz backup bazy</button>
+						<li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Wyloguj</a></li>
                             </form>
                         </li>
                         <li class="nav-item">
