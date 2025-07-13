@@ -1061,44 +1061,53 @@ def generate_report():
 @app.route('/harvest_overview')
 def harvest_overview():
     employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
-    summary = []
+    overview = []
 
     for emp in employees:
-        # SUMA KILOGRAMÓW
-        total_kg = db.session.query(db.func.sum(DailyHarvest.quantity_kg)).filter_by(employee_id=emp.id).scalar() or 0
+        # Zbierz wszystkie zbiory tego pracownika, posortowane po dacie
+        daily_harvests = (
+            DailyHarvest.query
+            .filter_by(employee_id=emp.id)
+            .order_by(DailyHarvest.date.desc())
+            .all()
+        )
 
-        # SUMA GODZIN
-        total_hours = db.session.query(db.func.sum(Entry.hours)).filter(
-            Entry.employee_id == emp.id,
-            Entry.hours > 0
-        ).scalar() or 0
+        # Grupuj zbiory po dacie
+        days = {}
+        for zbior in daily_harvests:
+            d = zbior.date.strftime('%Y-%m-%d')
+            if d not in days:
+                days[d] = []
+            days[d].append(zbior)
 
-        # ZAROBEK AKORDOWY (z Entry.quantity, piece_rate i ewentualnie modyfikatorem za odmianę)
-        piece_entries = Entry.query.filter(
-            Entry.employee_id == emp.id,
-            Entry.quantity > 0
-        ).all()
-        total_piece_pay = 0
-        for e in piece_entries:
-            modifier = 1.0
-            if e.variety and hasattr(e.variety, "piece_rate_modifier"):
-                modifier = e.variety.piece_rate_modifier
-            rate = e.piece_rate if e.piece_rate is not None else emp.piece_rate
-            total_piece_pay += (e.quantity or 0) * (rate or 0) * modifier
+        daily_summaries = []
+        for d, zbiory in sorted(days.items(), reverse=True):
+            total_kg = sum(z.quantity_kg for z in zbiory)
+            # Kwota akordowa za ten dzień (uwzględnia modyfikator odmiany, jeśli jest)
+            total_pay = 0
+            for z in zbiory:
+                modifier = 1.0
+                if z.variety and hasattr(z.variety, "piece_rate_modifier"):
+                    modifier = z.variety.piece_rate_modifier
+                rate = emp.piece_rate or 0
+                total_pay += (z.quantity_kg or 0) * rate * modifier
+            # Info o odmianach i polach (można rozwinąć jak chcesz)
+            odmiany = ', '.join(sorted(set(z.variety.name for z in zbiory if z.variety)))
+            pola = ', '.join(sorted(set(z.field.name for z in zbiory if z.field)))
+            daily_summaries.append({
+                'date': d,
+                'total_kg': round(total_kg, 2),
+                'total_pay': round(total_pay, 2),
+                'odmiany': odmiany,
+                'pola': pola
+            })
 
-        # ZAROBEK GODZINOWY
-        total_hourly_pay = (total_hours or 0) * (emp.hourly_rate or 0)
-
-        summary.append({
-            'id': emp.id,
+        overview.append({
             'name': emp.name,
-            'total_kg': round(total_kg, 2),
-            'total_hours': round(total_hours, 2),
-            'hourly_pay': round(total_hourly_pay, 2),
-            'piece_pay': round(total_piece_pay, 2)
+            'daily': daily_summaries
         })
 
-    return render_template('harvest_overview.html', summary=summary)
+    return render_template('harvest_overview.html', overview=overview)
 
 @app.route('/harvest_employee/<int:employee_id>')
 def harvest_employee(employee_id):

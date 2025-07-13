@@ -2,32 +2,67 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Podsumowanie zbiorów</title>
+    <title>Podsumowanie zbiorów – szczegóły</title>
     <style>
-        table { border-collapse: collapse; width: 100%; margin-top: 2em;}
-        th, td { border: 1px solid #aaa; padding: 8px; text-align: center;}
-        th { background: #d32f2f; color: #fff;}
+        body { font-family: sans-serif; background: #fafafa; }
+        h2 { color: #b71c1c; }
+        .pracownik {
+            margin-bottom: 3em;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 6px #ddd;
+            padding: 1.2em;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 1em;
+        }
+        th, td {
+            border: 1px solid #bbb;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background: #d32f2f;
+            color: #fff;
+        }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .pracownik-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: .4em;
+        }
     </style>
 </head>
 <body>
-    <h2>Podsumowanie zbiorów</h2>
-    <table>
-        <tr>
-            <th>Pracownik</th>
-            <th>Łącznie kg</th>
-            <th>Suma godzin</th>
-            <th>Wynagrodzenie za godziny</th>
-            <th>Wynagrodzenie akordowe</th>
-        </tr>
-        {% for row in summary %}
-        <tr>
-            <td><a href="{{ url_for('harvest_employee', employee_id=row.id) }}">{{ row.name }}</a></td>
-            <td>{{ row.total_kg }}</td>
-            <td>{{ row.total_hours }}</td>
-            <td>{{ row.hourly_pay }} zł</td>
-            <td>{{ row.piece_pay }} zł</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <h2>Podsumowanie zbiorów – szczegółowo</h2>
+    {% for pr in overview %}
+    <div class="pracownik">
+        <div class="pracownik-header">{{ pr.name }}</div>
+        {% if pr.daily %}
+        <table>
+            <tr>
+                <th>Data</th>
+                <th>Odmiana</th>
+                <th>Pole</th>
+                <th>Łącznie kg</th>
+                <th>Wynagrodzenie za zbiór</th>
+            </tr>
+            {% for dzien in pr.daily %}
+            <tr>
+                <td>{{ dzien.date }}</td>
+                <td>{{ dzien.odmiany }}</td>
+                <td>{{ dzien.pola }}</td>
+                <td>{{ dzien.total_kg }}</td>
+                <td>{{ dzien.total_pay }} zł</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <em>Brak zbiorów.</em>
+        {% endif %}
+    </div>
+    {% endfor %}
 </body>
 </html>
