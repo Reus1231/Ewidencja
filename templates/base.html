@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% set is_public = request.endpoint in ['harvest_overview', 'harvest_employee'] %}
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -64,7 +65,8 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-4">
+    {% if not is_public %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-4">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('dashboard') }}">Ewidencja Borówek</a>
             <div class="collapse navbar-collapse">
@@ -99,6 +101,7 @@
             </div>
         </div>
     </nav>
+{% endif %}
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
