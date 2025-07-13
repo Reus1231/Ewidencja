@@ -1057,6 +1057,67 @@ def generate_report():
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
     return render_template('generate_report.html', employees=employees)
+
+@app.route('/harvest_overview', methods=['GET'])
+@login_required
+def harvest_overview():
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    selected_id = request.args.get('employee_id', type=int)
+    selected_employee = None
+    summary = []
+
+    if selected_id:
+        selected_employee = Employee.query.get(selected_id)
+        all_dates = set(
+            [h.date for h in DailyHarvest.query.filter_by(employee_id=selected_id).all()] +
+            [e.date for e in Entry.query.filter_by(employee_id=selected_id).all()]
+        )
+        for d in sorted(all_dates, reverse=True):
+            harvests = DailyHarvest.query.filter_by(employee_id=selected_id, date=d).all()
+            total_kg = sum(h.quantity_kg for h in harvests)
+            odmiany = ', '.join(sorted(set(h.variety.name for h in harvests if h.variety)))
+            pola = ', '.join(sorted(set(h.field.name for h in harvests if h.field)))
+            total_piece_pay = 0
+            for h in harvests:
+                modifier = 1.0
+                if h.variety and hasattr(h.variety, "piece_rate_modifier"):
+                    modifier = h.variety.piece_rate_modifier
+                rate = selected_employee.piece_rate or 0
+                total_piece_pay += (h.quantity_kg or 0) * rate * modifier
+
+            entries = Entry.query.filter_by(employee_id=selected_id, date=d).all()
+            total_hours = sum(e.hours or 0 for e in entries if (e.hours or 0) > 0)
+            hourly_pay = (selected_employee.hourly_rate or 0) * total_hours
+
+            summary.append({
+                'date': d.strftime('%Y-%m-%d'),
+                'odmiany': odmiany,
+                'pola': pola,
+                'total_kg': round(total_kg, 2),
+                'total_piece_pay': round(total_piece_pay, 2),
+                'total_hours': round(total_hours, 2),
+                'hourly_pay': round(hourly_pay, 2),
+                'day_sum': round(total_piece_pay + hourly_pay, 2)
+            })
+
+    total_kg_sum = sum(row['total_kg'] for row in summary)
+    total_piece_sum = sum(row['total_piece_pay'] for row in summary)
+    total_hours_sum = sum(row['total_hours'] for row in summary)
+    total_hourly_sum = sum(row['hourly_pay'] for row in summary)
+    total_all_sum = sum(row['day_sum'] for row in summary)
+
+    return render_template(
+        'harvest_overview.html',
+        employees=employees,
+        selected_employee=selected_employee,
+        summary=summary,
+        total_kg_sum=round(total_kg_sum, 2),
+        total_piece_sum=round(total_piece_sum, 2),
+        total_hours_sum=round(total_hours_sum, 2),
+        total_hourly_sum=round(total_hourly_sum, 2),
+        total_all_sum=round(total_all_sum, 2),
+        selected_id=selected_id
+    )
     
 @app.route('/harvest_overview')
 def harvest_overview():

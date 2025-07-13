@@ -2,23 +2,23 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Podsumowanie pracownika (zbiór + godziny)</title>
+    <title>Podsumowanie pracownika</title>
     <style>
         body { font-family: sans-serif; background: #fafafa; }
-        .container { max-width: 900px; margin: 30px auto; }
+        .container { max-width: 800px; margin: 30px auto; }
         h2 { color: #b71c1c; }
         select { font-size: 1.1em; padding: 8px; margin-bottom: 15px; }
         table { border-collapse: collapse; width: 100%; margin-top: 2em; }
         th, td { border: 1px solid #bbb; padding: 8px; text-align: center;}
         th { background: #d32f2f; color: #fff;}
         tr:nth-child(even) { background: #f9f9f9; }
-        .sum-row { font-weight: bold; background: #ffe0b2; }
+        .sum-row { font-weight: bold; background: #fff3e0; }
     </style>
 </head>
 <body>
 <div class="container">
     <h2>Podsumowanie pracownika</h2>
-    <form method="get" action="{{ url_for('harvest_overview') }}">
+    <form method="get" action="{{ url_for('employee_summary') }}">
         <label for="employee_id">Wybierz pracownika:</label>
         <select name="employee_id" id="employee_id" onchange="this.form.submit()">
             <option value="">-- wybierz --</option>
@@ -37,7 +37,7 @@
                 <th>Data</th>
                 <th>Odmiana</th>
                 <th>Pole</th>
-                <th>Kg (akord)</th>
+                <th>Suma kg (akord)</th>
                 <th>Wynagrodzenie akordowe</th>
                 <th>Godzin pracy</th>
                 <th>Wynagrodzenie godzinowe</th>
