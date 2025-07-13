@@ -1059,7 +1059,6 @@ def generate_report():
     return render_template('generate_report.html', employees=employees)
 
 @app.route('/harvest_overview', methods=['GET'])
-@login_required
 def harvest_overview():
     employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
     selected_id = request.args.get('employee_id', type=int)
