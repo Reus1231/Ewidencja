@@ -1057,6 +1057,29 @@ def generate_report():
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
     return render_template('generate_report.html', employees=employees)
+    
+@app.route('/harvest_overview')
+def harvest_overview():
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    # Sumy zbiorów dla każdego pracownika (wszystkie dni)
+    summary = []
+    for emp in employees:
+        total_kg = db.session.query(db.func.sum(DailyHarvest.quantity_kg)).filter_by(employee_id=emp.id).scalar() or 0
+        summary.append({'id': emp.id, 'name': emp.name, 'total': round(total_kg, 2)})
+    return render_template('harvest_overview.html', summary=summary)
+
+@app.route('/harvest_employee/<int:employee_id>')
+def harvest_employee(employee_id):
+    employee = Employee.query.get_or_404(employee_id)
+    # obsługa wybranej daty (get param)
+    date_str = request.args.get('date')
+    if date_str:
+        selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        harvests = DailyHarvest.query.filter_by(employee_id=employee.id, date=selected_date).order_by(DailyHarvest.date.desc()).all()
+    else:
+        harvests = DailyHarvest.query.filter_by(employee_id=employee.id).order_by(DailyHarvest.date.desc()).all()
+        selected_date = None
+    return render_template('harvest_employee.html', employee=employee, harvests=harvests, selected_date=selected_date)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Wyniki zbiorów wszystkich pracowników</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Imię i nazwisko</th>
+            <th>Suma zbiorów (kg)</th>
+            <th>Szczegóły</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for emp in summary %}
+        <tr>
+            <td>{{ emp.name }}</td>
+            <td>{{ emp.total }}</td>
+            <td>
+                <a href="{{ url_for('harvest_employee', employee_id=emp.id) }}" class="btn btn-info btn-sm">Szczegóły</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
