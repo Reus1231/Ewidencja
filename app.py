@@ -8,7 +8,7 @@ from flask import (
 )
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
-    LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+    LoginManager, login_user, login_required, logout_user, current_user
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -17,6 +17,19 @@ from forms import (
     WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
 )
 import openpyxl
+
+# === IMPORT MODELI ===
+from models import db, User, Employee, Field, BerryVariety, WorkType, DailyHarvest, Entry, Presence  # Dodaj inne modele jeśli masz
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'bardzo-tajny'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///borowki.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bardzo-tajny'
