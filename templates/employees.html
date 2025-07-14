@@ -19,7 +19,13 @@
         {% for emp in employees %}
             <tr>
                 <td>{{ emp.id }}</td>
-                <td>{{ emp.external_id or '-' }}</td>
+                <td>
+                    {% if emp.external_id %}
+                        {{ emp.external_id }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
                 <td>
                     {% if emp.external_id %}
                         {{ emp.external_id }} -
