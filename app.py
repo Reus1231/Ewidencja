@@ -29,6 +29,22 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+@app.context_processor
+def inject_now():
+    return {'current_year': datetime.now().year}
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+with app.app_context():
+    db.create_all()
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin')
+        admin.set_password('admin')
+        db.session.add(admin)
+        db.session.commit()
+
 # MODELE
 
 class Employee(db.Model):
