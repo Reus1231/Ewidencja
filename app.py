@@ -31,29 +31,7 @@ login_manager.login_view = 'login'
 
 class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    external_id = db.Column(db.String(30), unique=True)   # Dodane pole!
-    name = db.Column(db.String(100), nullable=False)
-    hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
-    piece_rate = db.Column(db.Float, nullable=False, default=0.0)
-    is_active = db.Column(db.Boolean, default=True)
-    entries = db.relationship('Entry', backref='employee', lazy=True, cascade="all, delete-orphan")
-    harvests = db.relationship('DailyHarvest', backref='employee', lazy=True, cascade="all, delete-orphan")
-
-
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(200), nullable=False)
-    is_approved = db.Column(db.Boolean, default=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    external_id = db.Column(db.String(30), unique=True)
     name = db.Column(db.String(100), nullable=False)
     hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
     piece_rate = db.Column(db.Float, nullable=False, default=0.0)
