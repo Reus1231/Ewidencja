@@ -21,6 +21,7 @@ class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     external_id = db.Column(db.String(30), unique=True)
     name = db.Column(db.String(100), nullable=False)
+    external_id = db.Column(db.String(50))
     hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
     piece_rate = db.Column(db.Float, nullable=False, default=0.0)
     is_active = db.Column(db.Boolean, default=True)
