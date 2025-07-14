@@ -1,35 +1,9 @@
-import os
-import shutil
-from datetime import datetime, date
-from io import BytesIO
-
-from flask import (
-    Flask, render_template, request, redirect, url_for, flash, send_file, session
-)
-from flask_login import (
-    LoginManager, login_user, login_required, logout_user, current_user
-)
-from werkzeug.security import generate_password_hash, check_password_hash
-
-from forms import (
-    LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm,
-    WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
-)
-import openpyxl
-
-# === Importuj db i modele z models.py ===
 from models import db, User, Employee, Field, BerryVariety, WorkType, DailyHarvest, Entry, Presence
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'bardzo-tajny'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///borowki.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# ... konfiguracja ...
 
-# Inicjalizacja bazy!
 db.init_app(app)
-
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
 
 # MODELE
 
