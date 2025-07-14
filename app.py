@@ -6,7 +6,6 @@ from io import BytesIO
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, send_file, session
 )
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager, login_user, login_required, logout_user, current_user
 )
@@ -18,25 +17,17 @@ from forms import (
 )
 import openpyxl
 
-# === IMPORT MODELI ===
-from models import db, User, Employee, Field, BerryVariety, WorkType, DailyHarvest, Entry, Presence  # Dodaj inne modele jeśli masz
+# === Importuj db i modele z models.py ===
+from models import db, User, Employee, Field, BerryVariety, WorkType, DailyHarvest, Entry, Presence
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bardzo-tajny'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///borowki.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Inicjalizacja bazy!
 db.init_app(app)
 
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'bardzo-tajny'
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///borowki.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
