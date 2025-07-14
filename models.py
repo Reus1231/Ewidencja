@@ -66,8 +66,8 @@ class Entry(db.Model):
     work_type = db.relationship('WorkType')
     variety = db.relationship('BerryVariety')
     field = db.relationship('Field')
-    
-    class Presence(db.Model):
+
+class Presence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
