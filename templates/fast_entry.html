@@ -26,7 +26,14 @@
         <label>Pracownik:
             <select name="employee_id" required>
                 {% for p in employees %}
-                    <option value="{{ p.id }}">{{ p.name }}</option>
+                    <option value="{{ p.id }}">
+                        {% if p.external_id %}
+                            {{ p.external_id }} -
+                        {% else %}
+                            {{ p.id }} -
+                        {% endif %}
+                        {{ p.name }}
+                    </option>
                 {% endfor %}
             </select>
         </label>
@@ -58,6 +65,11 @@
             <ul>
                 {% for entry in last_entries %}
                 <li>
+                    {% if entry.employee.external_id %}
+                        {{ entry.employee.external_id }} -
+                    {% else %}
+                        {{ entry.employee.id }} -
+                    {% endif %}
                     {{ entry.employee.name }}, {{ entry.date }}, {{ entry.field.name }}, {{ entry.variety.name }}, {{ entry.quantity_kg }} kg
                 </li>
                 {% endfor %}

@@ -19,7 +19,14 @@
     <tbody>
         {% for row in data %}
         <tr>
-            <td>{{ row.employee.name }}</td>
+            <td>
+                {% if row.employee.external_id %}
+                    {{ row.employee.external_id }} -
+                {% else %}
+                    {{ row.employee.id }} -
+                {% endif %}
+                {{ row.employee.name }}
+            </td>
             <td>{{ "%.2f"|format(row.hours) if row.hours else "-" }}</td>
             <td>{{ "%.2f"|format(row.hourly_pay) if row.hours else "-" }}</td>
             <td>{{ "%.2f"|format(row.quantity) if row.quantity else "-" }}</td>

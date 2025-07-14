@@ -20,7 +20,14 @@
             <tr>
                 <td>{{ emp.id }}</td>
                 <td>{{ emp.external_id or '-' }}</td>
-                <td>{{ emp.name }}</td>
+                <td>
+                    {% if emp.external_id %}
+                        {{ emp.external_id }} -
+                    {% else %}
+                        {{ emp.id }} -
+                    {% endif %}
+                    {{ emp.name }}
+                </td>
                 <td>{{ "%.2f"|format(emp.hourly_rate) }}</td>
                 <td>{{ "%.2f"|format(emp.piece_rate) }}</td>
                 <td>{% if emp.is_active %}Aktywny{% else %}Nieaktywny{% endif %}</td>

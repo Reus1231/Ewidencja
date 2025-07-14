@@ -134,13 +134,25 @@
             <option value="">-- wybierz --</option>
             {% for emp in employees %}
                 <option value="{{ emp.id }}" {% if emp.id == selected_id %}selected{% endif %}>
+                    {% if emp.external_id %}
+                        {{ emp.external_id }} -
+                    {% else %}
+                        {{ emp.id }} -
+                    {% endif %}
                     {{ emp.name }}
                 </option>
             {% endfor %}
         </select>
     </form>
     {% if selected_employee %}
-        <h3>Pracownik: {{ selected_employee.name }}</h3>
+        <h3>Pracownik: 
+            {% if selected_employee.external_id %}
+                {{ selected_employee.external_id }} -
+            {% else %}
+                {{ selected_employee.id }} -
+            {% endif %}
+            {{ selected_employee.name }}
+        </h3>
         <div class="table-container">
         <table>
             <tr>

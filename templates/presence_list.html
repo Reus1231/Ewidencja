@@ -15,7 +15,14 @@
         {% for p in presences %}
         <tr>
             <td>{{ p.date }}</td>
-            <td>{{ p.employee.name }}</td>
+            <td>
+                {% if p.employee.external_id %}
+                    {{ p.employee.external_id }} -
+                {% else %}
+                    {{ p.employee.id }} -
+                {% endif %}
+                {{ p.employee.name }}
+            </td>
             <td>{{ p.time_in.strftime('%H:%M') }}</td>
             <td>{% if p.time_out %}{{ p.time_out.strftime('%H:%M') }}{% endif %}</td>
             <td>{{ p.comment }}</td>

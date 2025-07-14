@@ -11,7 +11,14 @@
         <select id="employee-select" name="selected_employee_id" class="form-control" style="width:100%" required>
           <option></option>
           {% for emp in employees %}
-            <option value="{{ emp.id }}">{{ emp.id }} - {{ emp.name }}</option>
+            <option value="{{ emp.id }}">
+              {% if emp.external_id %}
+                {{ emp.external_id }} -
+              {% else %}
+                {{ emp.id }} -
+              {% endif %}
+              {{ emp.name }}
+            </option>
           {% endfor %}
         </select>
       </div>
@@ -38,7 +45,14 @@
     <tbody>
     {% for emp in employees %}
       <tr>
-        <td>{{ emp.name }}</td>
+        <td>
+          {% if emp.external_id %}
+            {{ emp.external_id }} -
+          {% else %}
+            {{ emp.id }} -
+          {% endif %}
+          {{ emp.name }}
+        </td>
         <td>
           <input type="number" name="kg_{{ emp.id }}" min="0" step="0.01" class="form-control" placeholder="kg">
         </td>
@@ -61,7 +75,23 @@
   <tbody>
   {% for item in summary %}
     <tr>
-      <td>{{ item.name }}</td>
+      <td>
+        {% if employees %}
+          {% set emp = employees | selectattr("id", "equalto", item.id|int) | first %}
+          {% if emp %}
+            {% if emp.external_id %}
+              {{ emp.external_id }} -
+            {% else %}
+              {{ emp.id }} -
+            {% endif %}
+            {{ emp.name }}
+          {% else %}
+            {{ item.name }}
+          {% endif %}
+        {% else %}
+          {{ item.name }}
+        {% endif %}
+      </td>
       <td>{{ item.total }}</td>
       <td>
         {% for idx, kg in item.details %}

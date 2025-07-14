@@ -3,15 +3,6 @@
 <h2>Dodaj Nowy Wpis Pracy</h2>
 <form method="POST">
     <div class="form-group">
-<div id="piece_rate_fields" style="display: none;">
-    <div class="form-group">
-        <label for="quantity">Ilość (np. koszyki, sztuki):</label>
-        <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="0.0">
-    </div>
-    <div class="form-group">
-        <label for="piece_rate">Stawka akordowa (PLN/jedn.):</label>
-        <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" placeholder="np. 1.20">
-    </div>
         <label for="date">Data:</label>
         <input type="date" class="form-control" id="date" name="date" required>
     </div>
@@ -20,7 +11,14 @@
         <select class="form-control" id="employee_id" name="employee_id" required>
             <option value="">Wybierz pracownika</option>
             {% for employee in employees %}
-            <option value="{{ employee.id }}">{{ employee.name }}</option>
+            <option value="{{ employee.id }}">
+                {% if employee.external_id %}
+                    {{ employee.external_id }} -
+                {% else %}
+                    {{ employee.id }} -
+                {% endif %}
+                {{ employee.name }}
+            </option>
             {% endfor %}
         </select>
     </div>
@@ -45,6 +43,10 @@
         <div class="form-group">
             <label for="quantity">Ilość (np. koszyki, sztuki):</label>
             <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="0.0">
+        </div>
+        <div class="form-group">
+            <label for="piece_rate">Stawka akordowa (PLN/jedn.):</label>
+            <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" placeholder="np. 1.20">
         </div>
         <div class="form-group">
             <label for="variety_id">Odmiana:</label>

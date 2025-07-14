@@ -11,7 +11,14 @@
         <select class="form-control" id="employee_id" name="employee_id" required>
             <option value="">Wybierz pracownika</option>
             {% for employee in employees %}
-            <option value="{{ employee.id }}" {% if employee.id == entry.employee_id %}selected{% endif %}>{{ employee.name }}</option>
+            <option value="{{ employee.id }}" {% if employee.id == entry.employee_id %}selected{% endif %}>
+                {% if employee.external_id %}
+                    {{ employee.external_id }} -
+                {% else %}
+                    {{ employee.id }} -
+                {% endif %}
+                {{ employee.name }}
+            </option>
             {% endfor %}
         </select>
     </div>

@@ -46,29 +46,6 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
 
-# --- CAŁA TWOJA LOGIKA APLIKACJI, WSZYSTKIE TRASY, FUNKCJE ---
-# (wszystko od @app.route ... aż do końca, BEZ definicji modeli!)
-# Wklej tu całą resztę swojego kodu tras, JAK BYŁO.
-
-@app.route('/presence', methods=['GET', 'POST'])
-@login_required
-def presence():
-    form = PresenceForm()
-    form.employee_id.choices = [(e.id, e.name) for e in Employee.query.order_by(Employee.name)]
-    if form.validate_on_submit():
-        presence = Presence(
-            employee_id=form.employee_id.data,
-            date=form.date.data,
-            time_in=form.time_in.data,
-            time_out=form.time_out.data,
-            comment=form.comment.data
-        )
-        db.session.add(presence)
-        db.session.commit()
-        flash("Zapisano obecność.", "success")
-        return redirect(url_for('presence_list'))
-    return render_template('presence.html', form=form)
-
 @app.context_processor
 def inject_now():
     return {'current_year': datetime.now().year}
@@ -89,6 +66,7 @@ with app.app_context():
 @login_required
 def presence():
     form = PresenceForm()
+    employees = Employee.query.order_by(Employee.name).all()
     form.employee_id.choices = [(e.id, e.name) for e in Employee.query.order_by(Employee.name)]
     if form.validate_on_submit():
         presence = Presence(
