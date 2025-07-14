@@ -17,7 +17,6 @@ from forms import (
 )
 import openpyxl
 
-# MODELE! Importuj z models.py, nie definiuj tutaj!
 from models import db, User, Employee, Field, BerryVariety, WorkType, DailyHarvest, Entry, Presence
 
 app = Flask(__name__)
@@ -46,12 +45,6 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
 
-# --- TU WKLEJ WSZYSTKIE TRASY I LOGIKĘ Z POPRZEDNIEGO app.py ---
-# ... Wszystkie @app.route, funkcje, logikę ...
-# ... NIE dodawaj definicji modeli! ...
-
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
 @app.context_processor
 def inject_now():
     return {'current_year': datetime.now().year}
