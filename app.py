@@ -69,65 +69,6 @@ def presence():
         return redirect(url_for('presence_list'))
     return render_template('presence.html', form=form)
 
-# MODELE
-
-
-class Field(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-
-class BerryVariety(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    piece_rate_modifier = db.Column(db.Float, nullable=False, default=1.0)
-
-class WorkType(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    is_piece_rate = db.Column(db.Boolean, default=False)
-    unit = db.Column(db.String(20), nullable=True)
-
-class DailyHarvest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    quantity_kg = db.Column(db.Float, nullable=False)
-    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
-    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
-    comment = db.Column(db.Text, nullable=True)
-    variety = db.relationship('BerryVariety')
-    field = db.relationship('Field')
-
-class Entry(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    work_type_id = db.Column(db.Integer, db.ForeignKey('work_type.id'), nullable=False)
-    hours = db.Column(db.Float, nullable=True, default=0.0)
-    quantity = db.Column(db.Float, nullable=True, default=0.0)
-    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=True)
-    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=True)
-    comment = db.Column(db.Text, nullable=True)
-    piece_rate = db.Column(db.Float, nullable=True)
-
-    work_type = db.relationship('WorkType')
-    variety = db.relationship('BerryVariety')
-    field = db.relationship('Field')
-
-class Presence(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    time_in = db.Column(db.Time, nullable=False)
-    time_out = db.Column(db.Time, nullable=True)
-    comment = db.Column(db.Text, nullable=True)
-
-class DailySettings(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, unique=True)
-    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
-    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
-
 @app.context_processor
 def inject_now():
     return {'current_year': datetime.now().year}
