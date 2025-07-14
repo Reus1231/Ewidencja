@@ -28,6 +28,18 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 # MODELE
+
+class Employee(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    external_id = db.Column(db.String(30), unique=True)   # Dodane pole!
+    name = db.Column(db.String(100), nullable=False)
+    hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
+    piece_rate = db.Column(db.Float, nullable=False, default=0.0)
+    is_active = db.Column(db.Boolean, default=True)
+    entries = db.relationship('Entry', backref='employee', lazy=True, cascade="all, delete-orphan")
+    harvests = db.relationship('DailyHarvest', backref='employee', lazy=True, cascade="all, delete-orphan")
+
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -396,6 +408,7 @@ def add_employee():
     form = EmployeeForm()
     if form.validate_on_submit():
         emp = Employee(
+            external_id=form.external_id.data or None,  # Dodaj obsługę external_id!
             name=form.name.data,
             hourly_rate=float(form.hourly_rate.data),
             piece_rate=float(form.piece_rate.data),
@@ -413,6 +426,7 @@ def edit_employee(employee_id):
     emp = Employee.query.get_or_404(employee_id)
     form = EmployeeForm(obj=emp)
     if form.validate_on_submit():
+        emp.external_id = form.external_id.data or None
         emp.name = form.name.data
         emp.hourly_rate = float(form.hourly_rate.data)
         emp.piece_rate = float(form.piece_rate.data)

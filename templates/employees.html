@@ -7,6 +7,7 @@
         <thead>
             <tr>
                 <th>ID</th>
+                <th>ID pracownika</th> <!-- nowa kolumna -->
                 <th>Imię i nazwisko</th>
                 <th>Stawka godzinowa</th>
                 <th>Stawka akordowa</th>
@@ -18,6 +19,7 @@
         {% for emp in employees %}
             <tr>
                 <td>{{ emp.id }}</td>
+                <td>{{ emp.external_id or '-' }}</td>
                 <td>{{ emp.name }}</td>
                 <td>{{ "%.2f"|format(emp.hourly_rate) }}</td>
                 <td>{{ "%.2f"|format(emp.piece_rate) }}</td>
