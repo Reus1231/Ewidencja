@@ -3,125 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Podsumowanie pracownika (zbiór + godziny)</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- ważne dla responsywności -->
     <style>
-        :root {
-            --bg-primary: #181818;
-            --bg-secondary: #282828;
-            --accent: #1976d2;
-            --accent2: #00897b;
-            --text-main: #fafafa;
-            --text-muted: #b0b0b0;
-            --row-even: #232323;
-            --sum-bg: #222f3e;
-            --border: #333;
-            --input-bg: #232323;
-        }
-        body {
-            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-main);
-            margin: 0;
-            min-height: 100vh;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 10px;
-        }
-        h2 {
-            color: var(--accent);
-            font-size: 1.5em;
-            margin-bottom: 0.6em;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-        h3 {
-            color: var(--accent2);
-            font-size: 1.2em;
-            margin-bottom: 0.3em;
-        }
-        label {
-            font-size: 1.07em;
-            color: var(--text-muted);
-        }
-        select {
-            background: var(--input-bg);
-            color: var(--text-main);
-            font-size: 1.12em;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 350px;
-            outline: none;
-            box-shadow: 0 1px 4px #0003;
-            transition: border-color 0.2s;
-        }
-        select:focus {
-            border-color: var(--accent2);
-        }
+        body { font-family: sans-serif; background: #fafafa; margin: 0; }
+        .container { max-width: 900px; margin: 10px auto; padding: 6px; }
+        h2 { color: #b71c1c; font-size: 1.3em; margin-bottom: 0.4em; }
+        select { font-size: 1.1em; padding: 10px; margin-bottom: 18px; width: 100%; max-width: 350px; }
         .table-container {
             overflow-x: auto;
             width: 100%;
         }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            min-width: 550px;
-            margin-top: 1em;
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px #0004;
-        }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 14px 6px;
-            text-align: center;
-            font-size: 1.07em;
-        }
-        th {
-            background: var(--accent);
-            color: #fff;
-            font-size: 1.09em;
-            letter-spacing: 0.5px;
-            border: none;
-        }
-        tr:nth-child(even) { background: var(--row-even); }
-        .sum-row {
-            font-weight: bold;
-            background: var(--sum-bg);
-            color: var(--accent);
-            font-size: 1.08em;
-        }
-        .sum-row td {
-            border-top: 2px solid var(--accent);
-        }
-        @media (max-width: 700px) {
+        table { border-collapse: collapse; width: 100%; min-width: 550px; margin-top: 1em; background: #fff; }
+        th, td { border: 1px solid #bbb; padding: 12px 6px; text-align: center; font-size: 1em; }
+        th { background: #d32f2f; color: #fff; font-size: 1em; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .sum-row { font-weight: bold; background: #ffe0b2; }
+        @media (max-width: 600px) {
+            h2 { font-size: 1.1em; }
+            th, td { font-size: 0.95em; padding: 7px 2px; }
             .container { padding: 2px; }
-            th, td { font-size: 0.96em; padding: 8px 2px; }
             table { min-width: 430px; }
         }
         @media (max-width: 450px) {
             .table-container { padding: 0 0; }
-            th, td { font-size: 0.9em; padding: 5px 1px; }
+            th, td { font-size: 0.9em; padding: 4px 1px; }
             select { font-size: 1em; padding: 8px; }
-        }
-        ::selection {
-            background: var(--accent2);
-            color: #fff;
-        }
-        /* Scrollbar styl */
-        ::-webkit-scrollbar {
-            height: 8px;
-            background: var(--bg-secondary);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent2);
-            border-radius: 6px;
         }
     </style>
 </head>
@@ -140,7 +46,7 @@
         </select>
     </form>
     {% if selected_employee %}
-        <h3>Pracownik: {{ selected_employee.name }}</h3>
+        <h3 style="margin-bottom:0.2em;">Pracownik: {{ selected_employee.name }}</h3>
         <div class="table-container">
         <table>
             <tr>
