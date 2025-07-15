@@ -4,6 +4,13 @@
 <form method="POST">
     {{ form.hidden_tag() }}
     <div class="mb-3">
+        {{ form.external_id.label(class="form-label") }}
+        {{ form.external_id(class="form-control") }}
+        {% for error in form.external_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
         {{ form.name.label(class="form-label") }}
         {{ form.name(class="form-control") }}
         {% for error in form.name.errors %}

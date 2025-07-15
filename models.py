@@ -19,11 +19,12 @@ class User(db.Model, UserMixin):
 
 class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    external_id = db.Column(db.String(30), unique=True)
     name = db.Column(db.String(100), nullable=False)
+    external_id = db.Column(db.String(50))
     hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
     piece_rate = db.Column(db.Float, nullable=False, default=0.0)
     is_active = db.Column(db.Boolean, default=True)
-
     entries = db.relationship('Entry', backref='employee', lazy=True, cascade="all, delete-orphan")
     harvests = db.relationship('DailyHarvest', backref='employee', lazy=True, cascade="all, delete-orphan")
 
@@ -50,7 +51,6 @@ class DailyHarvest(db.Model):
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
     field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
     comment = db.Column(db.Text, nullable=True)
-
     variety = db.relationship('BerryVariety')
     field = db.relationship('Field')
 
@@ -64,7 +64,14 @@ class Entry(db.Model):
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=True)
     field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=True)
     comment = db.Column(db.Text, nullable=True)
-
     work_type = db.relationship('WorkType')
     variety = db.relationship('BerryVariety')
     field = db.relationship('Field')
+
+class Presence(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
+    time_in = db.Column(db.Time, nullable=False)
+    time_out = db.Column(db.Time, nullable=True)
+    comment = db.Column(db.Text, nullable=True)

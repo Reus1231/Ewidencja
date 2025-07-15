@@ -15,6 +15,7 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Zarejestruj się')
 
 class EmployeeForm(FlaskForm):
+    external_id = StringField('ID pracownika', validators=[Optional(), Length(max=30)])  # Nowe pole
     name = StringField('Imię i nazwisko', validators=[DataRequired(), Length(max=100)])
     hourly_rate = DecimalField('Stawka godzinowa (PLN/h)', validators=[DataRequired()], places=2, default=0.0)
     piece_rate = DecimalField('Stawka akordowa (PLN/jedn.)', validators=[DataRequired()], places=2, default=0.0)
@@ -53,18 +54,7 @@ class EntryForm(FlaskForm):
     quantity = FloatField('Ilość', validators=[Optional()])
     variety_id = SelectField('Odmiana', coerce=int, validators=[Optional()])
     field_id = SelectField('Pole', coerce=int, validators=[Optional()])
-    comment = TextAreaField('Komentarz', validators=[Optional(), Length(max=300)])
-    submit = SubmitField('Zapisz')
-
-class EntryForm(FlaskForm):
-    date = DateField('Data', default=datetime.today, format='%Y-%m-%d')
-    employee_id = SelectField('Pracownik', coerce=int, validators=[DataRequired()])
-    work_type_id = SelectField('Typ pracy', coerce=int, validators=[DataRequired()])
-    hours = FloatField('Godziny', validators=[Optional()])
-    quantity = FloatField('Ilość', validators=[Optional()])
-    variety_id = SelectField('Odmiana', coerce=int, validators=[Optional()])
-    field_id = SelectField('Pole', coerce=int, validators=[Optional()])
-    piece_rate = FloatField('Stawka akordowa (PLN/jedn.)', validators=[Optional()])  # <<--- DODAJ TO!
+    piece_rate = FloatField('Stawka akordowa (PLN/jedn.)', validators=[Optional()])
     comment = TextAreaField('Komentarz', validators=[Optional(), Length(max=300)])
     submit = SubmitField('Zapisz')
 

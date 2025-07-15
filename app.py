@@ -6,9 +6,8 @@ from io import BytesIO
 from flask import (
     Flask, render_template, request, redirect, url_for, flash, send_file, session
 )
-from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
-    LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+    LoginManager, login_user, login_required, logout_user, current_user
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -18,92 +17,34 @@ from forms import (
 )
 import openpyxl
 
+# Tylko import modeli!
+from models import db, User, Employee, Field, BerryVariety, WorkType, DailyHarvest, Entry, Presence
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'bardzo-tajny'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///borowki.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+db.init_app(app)
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-# MODELE
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(200), nullable=False)
-    is_approved = db.Column(db.Boolean, default=False)
+@app.context_processor
+def inject_now():
+    return {'current_year': datetime.now().year}
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    hourly_rate = db.Column(db.Float, nullable=False, default=0.0)
-    piece_rate = db.Column(db.Float, nullable=False, default=0.0)
-    is_active = db.Column(db.Boolean, default=True)
-    entries = db.relationship('Entry', backref='employee', lazy=True, cascade="all, delete-orphan")
-    harvests = db.relationship('DailyHarvest', backref='employee', lazy=True, cascade="all, delete-orphan")
-
-class Field(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-
-class BerryVariety(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    piece_rate_modifier = db.Column(db.Float, nullable=False, default=1.0)
-
-class WorkType(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    is_piece_rate = db.Column(db.Boolean, default=False)
-    unit = db.Column(db.String(20), nullable=True)
-
-class DailyHarvest(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    quantity_kg = db.Column(db.Float, nullable=False)
-    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
-    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
-    comment = db.Column(db.Text, nullable=True)
-    variety = db.relationship('BerryVariety')
-    field = db.relationship('Field')
-
-class Entry(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    work_type_id = db.Column(db.Integer, db.ForeignKey('work_type.id'), nullable=False)
-    hours = db.Column(db.Float, nullable=True, default=0.0)
-    quantity = db.Column(db.Float, nullable=True, default=0.0)
-    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=True)
-    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=True)
-    comment = db.Column(db.Text, nullable=True)
-    piece_rate = db.Column(db.Float, nullable=True)
-
-    work_type = db.relationship('WorkType')
-    variety = db.relationship('BerryVariety')
-    field = db.relationship('Field')
-
-class Presence(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    employee_id = db.Column(db.Integer, db.ForeignKey('employee.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
-    time_in = db.Column(db.Time, nullable=False)
-    time_out = db.Column(db.Time, nullable=True)
-    comment = db.Column(db.Text, nullable=True)
-
-class DailySettings(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Date, nullable=False, unique=True)
-    field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=False)
-    variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=False)
+with app.app_context():
+    db.create_all()
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin')
+        admin.set_password('admin')
+        db.session.add(admin)
+        db.session.commit()
 
 @app.context_processor
 def inject_now():
@@ -125,6 +66,7 @@ with app.app_context():
 @login_required
 def presence():
     form = PresenceForm()
+    employees = Employee.query.order_by(Employee.name).all()
     form.employee_id.choices = [(e.id, e.name) for e in Employee.query.order_by(Employee.name)]
     if form.validate_on_submit():
         presence = Presence(
@@ -396,6 +338,7 @@ def add_employee():
     form = EmployeeForm()
     if form.validate_on_submit():
         emp = Employee(
+            external_id=form.external_id.data or None,  # Dodaj obsługę external_id!
             name=form.name.data,
             hourly_rate=float(form.hourly_rate.data),
             piece_rate=float(form.piece_rate.data),
@@ -413,6 +356,7 @@ def edit_employee(employee_id):
     emp = Employee.query.get_or_404(employee_id)
     form = EmployeeForm(obj=emp)
     if form.validate_on_submit():
+        emp.external_id = form.external_id.data or None
         emp.name = form.name.data
         emp.hourly_rate = float(form.hourly_rate.data)
         emp.piece_rate = float(form.piece_rate.data)

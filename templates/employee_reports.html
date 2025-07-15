@@ -10,6 +10,11 @@
             {% for emp in employees %}
                 <option value="{{ emp.id }}"
                     {% if selected_employee_ids and emp.id|string in selected_employee_ids %}selected{% endif %}>
+                    {% if emp.external_id %}
+                        {{ emp.external_id }} -
+                    {% else %}
+                        {{ emp.id }} -
+                    {% endif %}
                     {{ emp.name }}
                 </option>
             {% endfor %}
@@ -41,7 +46,13 @@
 
 {% if summaries %}
     {% for summary in summaries %}
-        <h4>Podsumowanie dla: {{ summary.employee.name }}, okres: {{ summary.start_date }} - {{ summary.end_date }}</h4>
+        <h4>Podsumowanie dla: 
+        {% if summary.employee.external_id %}
+            {{ summary.employee.external_id }} -
+        {% else %}
+            {{ summary.employee.id }} -
+        {% endif %}
+        {{ summary.employee.name }}, okres: {{ summary.start_date }} - {{ summary.end_date }}</h4>
         <table class="table table-bordered mb-4">
             <tr>
                 <th>Suma godzin</th>
