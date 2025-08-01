@@ -74,8 +74,5 @@ class Presence(db.Model):
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow)
     time_in = db.Column(db.Time, nullable=False)
     time_out = db.Column(db.Time, nullable=True)
-<<<<<<< HEAD
     break_minutes = db.Column(db.Integer, nullable=True, default=0)
-=======
->>>>>>> ed9e1971f284a74364b82bee5f084b46d0737fbf
     comment = db.Column(db.Text, nullable=True)
