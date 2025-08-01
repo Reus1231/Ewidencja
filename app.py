@@ -11,11 +11,8 @@ from flask_login import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
-<<<<<<< HEAD
 from flask_migrate import Migrate  # DODAJ TEN IMPORT!
 
-=======
->>>>>>> ed9e1971f284a74364b82bee5f084b46d0737fbf
 from forms import (
     LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm,
     WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
@@ -35,11 +32,8 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-<<<<<<< HEAD
 migrate = Migrate(app, db)
 
-=======
->>>>>>> ed9e1971f284a74364b82bee5f084b46d0737fbf
 @app.context_processor
 def inject_now():
     return {'current_year': datetime.now().year}
@@ -72,7 +66,6 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
 
-<<<<<<< HEAD
 @app.route('/rozliczenie_czasu_pracy', methods=['GET'])
 @login_required
 def rozliczenie_czasu_pracy():
@@ -127,8 +120,6 @@ def rozliczenie_czasu_pracy():
 
     return render_template('rozliczenie_czasu_pracy.html', data=data, fields=fields, start_date=start_date, end_date=end_date)
 
-=======
->>>>>>> ed9e1971f284a74364b82bee5f084b46d0737fbf
 @app.route('/presence', methods=['GET', 'POST'])
 @login_required
 def presence():
