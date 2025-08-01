@@ -7,3 +7,4 @@ Werkzeug
 openpyxl
 gunicorn
 psycopg2-binary
+flask_migrate
