@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Rejestracja obecności</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.employee_id.label }}
+		{{ form.break_minutes.label }} {{ form.break_minutes(class="form-control") }}
+        <select class="form-control" name="{{ form.employee_id.name }}">
+            {% for value, label in form.employee_id.choices %}
+                {% set emp = employees | selectattr("id", "equalto", value) | first %}
+                <option value="{{ value }}"
+                    {% if form.employee_id.data == value %}selected{% endif %}>
+                    {% if emp and emp.external_id %}
+                        {{ emp.external_id }} -
+                    {% else %}
+                        {{ value }} -
+                    {% endif %}
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        {{ form.date.label }} {{ form.date(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.time_in.label }} {{ form.time_in(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.time_out.label }} {{ form.time_out(class="form-control") }}
+    </div>
+    <div class="form-group">
+        {{ form.comment.label }} {{ form.comment(class="form-control") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a href="{{ url_for('presence_list') }}" class="btn btn-secondary">Lista obecności</a>
+</form>
+{% endblock %}

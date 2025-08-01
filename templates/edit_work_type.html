@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edytuj Typ Pracy</h2>
+<form method="POST">
+    <div class="form-group">
+        <label for="name">Nazwa Typu Pracy:</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ work_type.name }}" required>
+    </div>
+    <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="is_piece_rate" name="is_piece_rate" {% if work_type.is_piece_rate %}checked{% endif %} onchange="toggleUnitField()">
+        <label class="form-check-label" for="is_piece_rate">Czy praca akordowa?</label>
+    </div>
+    <div class="form-group" id="unit_field">
+        <label for="unit">Jednostka (np. KG, sztuki, koszyki):</label>
+        <input type="text" class="form-control" id="unit" name="unit" value="{{ work_type.unit if work_type.unit else '' }}">
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
+    <a href="{{ url_for('work_types') }}" class="btn btn-secondary">Anuluj</a>
+</form>
+
+<script>
+    function toggleUnitField() {
+        var isPieceRateCheckbox = document.getElementById('is_piece_rate');
+        var unitField = document.getElementById('unit_field');
+        if (isPieceRateCheckbox.checked) {
+            unitField.style.display = 'block';
+            document.getElementById('unit').setAttribute('required', 'required');
+        } else {
+            unitField.style.display = 'none';
+            document.getElementById('unit').removeAttribute('required');
+            document.getElementById('unit').value = ''; // Wyczyść wartość, jeśli nie jest akordowa
+        }
+    }
+    // Wywołaj funkcję przy ładowaniu strony, aby ustawić początkowy stan
+    document.addEventListener('DOMContentLoaded', toggleUnitField);
+</script>
+{% endblock %}

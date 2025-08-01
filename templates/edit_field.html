@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edytuj Pole</h2>
+<form method="POST">
+    <div class="form-group">
+        <label for="name">Nazwa Pola:</label>
+        <input type="text" class="form-control" id="name" name="name" value="{{ field.name }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
+    <a href="{{ url_for('fields') }}" class="btn btn-secondary">Anuluj</a>
+</form>
+{% endblock %}

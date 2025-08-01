@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dodaj pracownika</h2>
+<form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-3">
+        {{ form.external_id.label(class="form-label") }}
+        {{ form.external_id(class="form-control") }}
+        {% for error in form.external_id.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        {% for error in form.name.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.hourly_rate.label(class="form-label") }}
+        {{ form.hourly_rate(class="form-control") }}
+        {% for error in form.hourly_rate.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3">
+        {{ form.piece_rate.label(class="form-label") }}
+        {{ form.piece_rate(class="form-control") }}
+        {% for error in form.piece_rate.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+    </div>
+    <div class="mb-3 form-check">
+        {{ form.is_active(class="form-check-input") }}
+        {{ form.is_active.label(class="form-check-label") }}
+    </div>
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a href="{{ url_for('employees') }}" class="btn btn-secondary">Anuluj</a>
+</form>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dodaj Nowy Wpis Pracy</h2>
+<form method="POST">
+    <div class="form-group">
+        <label for="date">Data:</label>
+        <input type="date" class="form-control" id="date" name="date" required>
+    </div>
+    <div class="form-group">
+        <label for="employee_id">Pracownik:</label>
+        <select class="form-control" id="employee_id" name="employee_id" required>
+            <option value="">Wybierz pracownika</option>
+            {% for employee in employees %}
+            <option value="{{ employee.id }}">
+                {% if employee.external_id %}
+                    {{ employee.external_id }} -
+                {% else %}
+                    {{ employee.id }} -
+                {% endif %}
+                {{ employee.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="work_type_id">Typ Pracy:</label>
+        <select class="form-control" id="work_type_id" name="work_type_id" required onchange="toggleWorkTypeFields()">
+            <option value="">Wybierz typ pracy</option>
+            {% for work_type in work_types %}
+            <option value="{{ work_type.id }}" data-is-piece-rate="{{ 'true' if work_type.is_piece_rate else 'false' }}">{{ work_type.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div id="hourly_fields" style="display: none;">
+        <div class="form-group">
+            <label for="hours">Godziny:</label>
+            <input type="number" step="0.01" class="form-control" id="hours" name="hours" value="0.0">
+        </div>
+    </div>
+
+    <div id="piece_rate_fields" style="display: none;">
+        <div class="form-group">
+            <label for="quantity">Ilość (np. koszyki, sztuki):</label>
+            <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="0.0">
+        </div>
+        <div class="form-group">
+            <label for="piece_rate">Stawka akordowa (PLN/jedn.):</label>
+            <input type="number" step="0.01" class="form-control" id="piece_rate" name="piece_rate" placeholder="np. 1.20">
+        </div>
+        <div class="form-group">
+            <label for="variety_id">Odmiana:</label>
+            <select class="form-control" id="variety_id_piece" name="variety_id">
+                <option value="">Wybierz odmianę</option>
+                {% for variety in varieties %}
+                <option value="{{ variety.id }}">{{ variety.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="field_id">Pole:</label>
+            <select class="form-control" id="field_id_piece" name="field_id">
+                <option value="">Wybierz pole</option>
+                {% for field in fields %}
+                <option value="{{ field.id }}">{{ field.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="comment">Komentarz (opcjonalnie):</label>
+        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Dodaj Wpis</button>
+    <a href="{{ url_for('entries') }}" class="btn btn-secondary">Anuluj</a>
+</form>
+
+<script>
+    function toggleWorkTypeFields() {
+        var workTypeSelect = document.getElementById('work_type_id');
+        var selectedOption = workTypeSelect.options[workTypeSelect.selectedIndex];
+        var isPieceRate = selectedOption && selectedOption.dataset.isPieceRate === 'true';
+
+        var hourlyFields = document.getElementById('hourly_fields');
+        var pieceRateFields = document.getElementById('piece_rate_fields');
+
+        var hoursInput = document.getElementById('hours');
+        var quantityInput = document.getElementById('quantity');
+        var varietySelect = document.getElementById('variety_id_piece');
+        var fieldSelect = document.getElementById('field_id_piece');
+
+        if (isPieceRate) {
+            hourlyFields.style.display = 'none';
+            pieceRateFields.style.display = 'block';
+            
+            hoursInput.value = 0.0;
+            hoursInput.removeAttribute('required');
+
+            quantityInput.setAttribute('required', 'required');
+            varietySelect.setAttribute('required', 'required');
+            fieldSelect.setAttribute('required', 'required');
+
+        } else {
+            hourlyFields.style.display = 'block';
+            pieceRateFields.style.display = 'none';
+
+            quantityInput.value = 0.0;
+            quantityInput.removeAttribute('required');
+            varietySelect.value = '';
+            varietySelect.removeAttribute('required');
+            fieldSelect.value = '';
+            fieldSelect.removeAttribute('required');
+
+            hoursInput.setAttribute('required', 'required');
+        }
+    }
+
+    // Ustawia dzisiejszą datę jako domyślną
+    document.addEventListener('DOMContentLoaded', function() {
+        var dateInput = document.getElementById('date');
+        if (dateInput && !dateInput.value) {
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var yyyy = today.getFullYear();
+            var today_iso = yyyy + '-' + mm + '-' + dd;
+            dateInput.value = today_iso;
+        }
+        toggleWorkTypeFields();
+    });
+</script>
+{% endblock %}

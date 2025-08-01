@@ -1,0 +1,20 @@
+<h2>Szybki wpis zbiorów (Krok 2)</h2>
+<p>Podaj parametry zbioru dla dzisiejszego dnia:</p>
+<form method="post">
+  <label>Odmiana:
+    <select name="variety_id" required>
+      {% for variety in varieties %}
+      <option value="{{ variety.id }}">{{ variety.name }}</option>
+      {% endfor %}
+    </select>
+  </label><br>
+  <label>Pole:
+    <select name="field_id" required>
+      {% for field in fields %}
+      <option value="{{ field.id }}">{{ field.name }}</option>
+      {% endfor %}
+    </select>
+  </label><br>
+  <label>Cena za kg: <input type="number" name="piece_rate" step="0.01" min="0" required></label><br>
+  <button type="submit">Zapisz zbiory</button>
+</form>

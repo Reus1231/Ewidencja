@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Szybki wpis zbiorów — dodaj koszyki</h2>
+
+<!-- Szybkie wyszukiwanie pracownika do wpisu indywidualnego -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="post" class="row g-3 align-items-center">
+      <div class="col-md-6">
+        <label for="employee-select" class="form-label">Dodaj koszyk wybranemu pracownikowi:</label>
+        <select id="employee-select" name="selected_employee_id" class="form-control" style="width:100%" required>
+          <option></option>
+          {% for emp in employees %}
+            <option value="{{ emp.id }}">
+              {% if emp.external_id %}
+                {{ emp.external_id }} -
+              {% else %}
+                {{ emp.id }} -
+              {% endif %}
+              {{ emp.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label for="selected_employee_kg" class="form-label visually-hidden">Ilość (kg)</label>
+        <input type="number" id="selected_employee_kg" name="selected_employee_kg" min="0" step="0.01" class="form-control" placeholder="kg">
+      </div>
+      <div class="col-md-3">
+        <button type="submit" name="action" value="add_selected" class="btn btn-success">Dodaj koszyk</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Dotychczasowa tabela zbiorcza -->
+<form method="post">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Pracownik</th>
+        <th>Dodaj koszyk [kg]</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for emp in employees %}
+      <tr>
+        <td>
+          {% if emp.external_id %}
+            {{ emp.external_id }} -
+          {% else %}
+            {{ emp.id }} -
+          {% endif %}
+          {{ emp.name }}
+        </td>
+        <td>
+          <input type="number" name="kg_{{ emp.id }}" min="0" step="0.01" class="form-control" placeholder="kg">
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit" name="action" value="add_bulk" class="btn btn-primary">Dodaj koszyki (wszyscy)</button>
+</form>
+
+<h3 class="mt-4">Podsumowanie dnia:</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Pracownik</th>
+      <th>Suma kg</th>
+      <th>Wszystkie koszyki</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in summary %}
+    <tr>
+      <td>
+        {% if employees %}
+          {% set emp = employees | selectattr("id", "equalto", item.id|int) | first %}
+          {% if emp %}
+            {% if emp.external_id %}
+              {{ emp.external_id }} -
+            {% else %}
+              {{ emp.id }} -
+            {% endif %}
+            {{ emp.name }}
+          {% else %}
+            {{ item.name }}
+          {% endif %}
+        {% else %}
+          {{ item.name }}
+        {% endif %}
+      </td>
+      <td>{{ item.total }}</td>
+      <td>
+        {% for idx, kg in item.details %}
+          <form method="post" style="display:inline;">
+            <input type="hidden" name="remove_emp_id" value="{{ item.id }}">
+            <input type="hidden" name="remove_idx" value="{{ idx }}">
+            {{ kg|round(2) }}
+            <button type="submit" class="btn btn-sm btn-danger" title="Usuń koszyk">&times;</button>
+          </form>
+          {% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('fast_harvest_finish') }}" class="btn btn-success mt-3">Koniec — zapisz sumy</a>
+
+<!-- Select2 & jQuery (do indywidualnego wyboru pracownika) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#employee-select').select2({
+        placeholder: "Wyszukaj pracownika po ID lub nazwisku...",
+        allowClear: true,
+        width: 'resolve'
+    });
+});
+</script>
+{% endblock %}

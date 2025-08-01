@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Lista obecności</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Pracownik</th>
+            <th>Godzina wejścia</th>
+            <th>Godzina wyjścia</th>
+            <th>Komentarz</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in presences %}
+        <tr>
+            <td>{{ p.date }}</td>
+            <td>
+                {% if p.employee.external_id %}
+                    {{ p.employee.external_id }} -
+                {% else %}
+                    {{ p.employee.id }} -
+                {% endif %}
+                {{ p.employee.name }}
+            </td>
+            <td>{{ p.time_in.strftime('%H:%M') }}</td>
+            <td>{% if p.time_out %}{{ p.time_out.strftime('%H:%M') }}{% endif %}</td>
+            <td>{{ p.comment }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{{ url_for('presence') }}" class="btn btn-primary">Dodaj obecność</a>
+{% endblock %}
