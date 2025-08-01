@@ -1,42 +1,53 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">Panel główny</h2>
-<div class="row row-cols-1 row-cols-md-3 g-4">
-  {% for url, icon, title, text in [
-    (url_for('employees'), 'fa-users', 'Pracownicy', 'Zarządzaj pracownikami'),
-    (url_for('fields'), 'fa-tractor', 'Pola', 'Zarządzaj polami'),
-    (url_for('varieties'), 'fa-leaf', 'Odmiany', 'Zarządzaj odmianami'),
-    (url_for('work_types'), 'fa-tasks', 'Typy pracy', 'Typy pracy'),
-    (url_for('harvests'), 'fa-basket-shopping', 'Dzienne zbiory', 'Wprowadzaj zbiory'),
-    (url_for('entries'), 'fa-clock', 'Wpisy pracy', 'Rejestruj prace'),
-    (url_for('rozliczenie_czasu_pracy'), 'fa-calendar-check', 'Rozliczenie czasu pracy', 'Podsumowanie czasu pracy'),
-    (url_for('employee_reports'), 'fa-file-alt', 'Raporty', 'Generuj raporty')
-  ] %}
-  <div class="col">
-    <a href="{{ url }}" class="text-decoration-none text-white">
-      <div class="card custom-red shadow h-100 text-center rounded-4 border-0">
-        <div class="card-body">
-          <i class="fas {{ icon }} fa-3x mb-2"></i>
-          <h5 class="card-title mt-2">{{ title }}</h5>
-          <p class="card-text">{{ text }}</p>
-        </div>
-      </div>
+<div class="dashboard-container">
+  <div class="dashboard-title">Panel główny</div>
+  <div class="tiles-grid">
+    <a href="{{ url_for('employees') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-users"></i></span>
+      <span class="tile-title">Pracownicy</span>
+      <span class="tile-desc">Zarządzaj pracownikami</span>
+    </a>
+    <a href="{{ url_for('fields') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-tractor"></i></span>
+      <span class="tile-title">Pola</span>
+      <span class="tile-desc">Zarządzaj polami</span>
+    </a>
+    <a href="{{ url_for('varieties') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-leaf"></i></span>
+      <span class="tile-title">Odmiany</span>
+      <span class="tile-desc">Zarządzaj odmianami</span>
+    </a>
+    <a href="{{ url_for('work_types') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-tasks"></i></span>
+      <span class="tile-title">Typy pracy</span>
+      <span class="tile-desc">Typy pracy</span>
+    </a>
+    <a href="{{ url_for('harvests') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-basket-shopping"></i></span>
+      <span class="tile-title">Dzienne zbiory</span>
+      <span class="tile-desc">Wprowadzaj zbiory</span>
+    </a>
+    <a href="{{ url_for('entries') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-clock"></i></span>
+      <span class="tile-title">Wpisy pracy</span>
+      <span class="tile-desc">Rejestruj prace</span>
+    </a>
+    <a href="{{ url_for('rozliczenie_czasu_pracy') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-calendar-check"></i></span>
+      <span class="tile-title">Rozliczenie czasu pracy</span>
+      <span class="tile-desc">Podsumowanie czasu pracy</span>
+    </a>
+    <a href="{{ url_for('employee_reports') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-file-alt"></i></span>
+      <span class="tile-title">Raporty</span>
+      <span class="tile-desc">Generuj raporty</span>
+    </a>
+    <a href="{{ url_for('fast_harvest') }}" class="tile">
+      <span class="tile-icon"><i class="fas fa-bolt"></i></span>
+      <span class="tile-title">Szybki wpis zbiorów</span>
+      <span class="tile-desc">Wpisz zbiory dla wielu pracowników naraz</span>
     </a>
   </div>
-  {% endfor %}
-
-  <!-- NOWY KAFELEK: Szybki wpis zbiorów -->
-  <div class="col">
-    <a href="{{ url_for('fast_harvest') }}" class="text-decoration-none text-white">
-      <div class="card custom-red shadow h-100 text-center rounded-4 border-0">
-        <div class="card-body">
-          <i class="fas fa-bolt fa-3x mb-2"></i>
-          <h5 class="card-title mt-2">Szybki wpis zbiorów</h5>
-          <p class="card-text">Wpisz zbiory dla wielu pracowników naraz</p>
-        </div>
-      </div>
-    </a>
-  </div>
-
 </div>
 {% endblock %}

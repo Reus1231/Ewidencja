@@ -2,39 +2,90 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f8f9fa;
     color: #343a40;
-}
-.navbar {
-    background-color: #343a40 !important;
-}
-.container {
-    padding-top: 20px;
-}
-.table {
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,.05);
-}
-.btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-.btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    transition: background 0.3s, color 0.3s;
 }
 :root {
-  --bg: #ffffff;
-  --text: #222222;
+    --bg: #ffffff;
+    --text: #222222;
+    --navbar: #dc3545;
+    --footer: #f8f9fa;
 }
 
 body {
-  background: var(--bg);
-  color: var(--text);
+    background: var(--bg);
+    color: var(--text);
 }
 
 body.dark-mode {
-  --bg: #1a1a1a;
-  --text: #f1f1f1;
+    --bg: #181b1f;
+    --text: #f1f1f1;
+    --navbar: #630606;
+    --footer: #222;
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 40px auto 0 auto;
+    padding: 2rem;
+}
+
+.dashboard-title {
+    font-size: 2.1rem;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.tiles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.tile {
+    background: #8D0707;
+    color: #fff;
+    border-radius: 1.5rem;
+    box-shadow: 0 4px 24px #0003;
+    padding: 2.2rem 1.3rem 1.4rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+    min-height: 170px;
+    text-align: center;
+    text-decoration: none;
+    border: 0;
+}
+.tile:hover, .tile:focus {
+    background: #a91e1e;
+    transform: translateY(-5px) scale(1.03);
+}
+.tile .tile-icon {
+    font-size: 2.8rem;
+    margin-bottom: 0.7rem;
+}
+.tile-title {
+    font-weight: 600;
+    font-size: 1.22rem;
+    margin-bottom: 0.25rem;
+}
+.tile-desc {
+    font-size: 1.04rem;
+    color: #ffeaea;
+}
+
+@media (max-width: 800px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    .tiles-grid {
+        gap: 1rem;
+    }
+    .tile {
+        padding: 1.1rem 0.7rem 1rem 0.7rem;
+        min-height: 105px;
+    }
 }
