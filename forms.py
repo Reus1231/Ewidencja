@@ -63,9 +63,6 @@ class PresenceForm(FlaskForm):
     date = DateField('Data', default=date.today, validators=[DataRequired()])
     time_in = TimeField('Godzina wejścia', validators=[DataRequired()])
     time_out = TimeField('Godzina wyjścia', validators=[Optional()])
-<<<<<<< HEAD
     break_minutes = FloatField('Przerwa (minuty)', validators=[Optional()])
-=======
->>>>>>> ed9e1971f284a74364b82bee5f084b46d0737fbf
     comment = TextAreaField('Komentarz', validators=[Optional()])
     submit = SubmitField('Zapisz')
