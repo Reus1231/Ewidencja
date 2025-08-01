@@ -3,47 +3,47 @@
 <div class="dashboard-container">
   <div class="dashboard-title">Panel główny</div>
   <div class="tiles-grid">
-    <a href="{{ url_for('employees') }}" class="tile">
+    <a href="{{ url_for('employees') }}" class="tile" tabindex="0" title="Pracownicy">
       <span class="tile-icon"><i class="fas fa-users"></i></span>
       <span class="tile-title">Pracownicy</span>
       <span class="tile-desc">Zarządzaj pracownikami</span>
     </a>
-    <a href="{{ url_for('fields') }}" class="tile">
+    <a href="{{ url_for('fields') }}" class="tile" tabindex="0" title="Pola">
       <span class="tile-icon"><i class="fas fa-tractor"></i></span>
       <span class="tile-title">Pola</span>
       <span class="tile-desc">Zarządzaj polami</span>
     </a>
-    <a href="{{ url_for('varieties') }}" class="tile">
+    <a href="{{ url_for('varieties') }}" class="tile" tabindex="0" title="Odmiany">
       <span class="tile-icon"><i class="fas fa-leaf"></i></span>
       <span class="tile-title">Odmiany</span>
       <span class="tile-desc">Zarządzaj odmianami</span>
     </a>
-    <a href="{{ url_for('work_types') }}" class="tile">
+    <a href="{{ url_for('work_types') }}" class="tile" tabindex="0" title="Typy pracy">
       <span class="tile-icon"><i class="fas fa-tasks"></i></span>
       <span class="tile-title">Typy pracy</span>
       <span class="tile-desc">Typy pracy</span>
     </a>
-    <a href="{{ url_for('harvests') }}" class="tile">
+    <a href="{{ url_for('harvests') }}" class="tile" tabindex="0" title="Dzienne zbiory">
       <span class="tile-icon"><i class="fas fa-basket-shopping"></i></span>
       <span class="tile-title">Dzienne zbiory</span>
       <span class="tile-desc">Wprowadzaj zbiory</span>
     </a>
-    <a href="{{ url_for('entries') }}" class="tile">
+    <a href="{{ url_for('entries') }}" class="tile" tabindex="0" title="Wpisy pracy">
       <span class="tile-icon"><i class="fas fa-clock"></i></span>
       <span class="tile-title">Wpisy pracy</span>
       <span class="tile-desc">Rejestruj prace</span>
     </a>
-    <a href="{{ url_for('rozliczenie_czasu_pracy') }}" class="tile">
+    <a href="{{ url_for('rozliczenie_czasu_pracy') }}" class="tile" tabindex="0" title="Rozliczenie czasu pracy">
       <span class="tile-icon"><i class="fas fa-calendar-check"></i></span>
       <span class="tile-title">Rozliczenie czasu pracy</span>
       <span class="tile-desc">Podsumowanie czasu pracy</span>
     </a>
-    <a href="{{ url_for('employee_reports') }}" class="tile">
+    <a href="{{ url_for('employee_reports') }}" class="tile" tabindex="0" title="Raporty">
       <span class="tile-icon"><i class="fas fa-file-alt"></i></span>
       <span class="tile-title">Raporty</span>
       <span class="tile-desc">Generuj raporty</span>
     </a>
-    <a href="{{ url_for('fast_harvest') }}" class="tile">
+    <a href="{{ url_for('fast_harvest') }}" class="tile" tabindex="0" title="Szybki wpis zbiorów">
       <span class="tile-icon"><i class="fas fa-bolt"></i></span>
       <span class="tile-title">Szybki wpis zbiorów</span>
       <span class="tile-desc">Wpisz zbiory dla wielu pracowników naraz</span>

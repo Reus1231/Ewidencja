@@ -4,11 +4,16 @@ body {
     color: #343a40;
     transition: background 0.3s, color 0.3s;
 }
+
 :root {
     --bg: #ffffff;
     --text: #222222;
     --navbar: #dc3545;
     --footer: #f8f9fa;
+    --tile: #8D0707;
+    --tile-hover: #ad1d1d;
+    --tile-shadow: 0 4px 24px #0002;
+    --tile-glow: 0 0 12px #d32f2f88;
 }
 
 body {
@@ -21,60 +26,100 @@ body.dark-mode {
     --text: #f1f1f1;
     --navbar: #630606;
     --footer: #222;
+    --tile: #a91e1e;
+    --tile-hover: #d32f2f;
+    --tile-shadow: 0 4px 32px #0005;
+    --tile-glow: 0 0 18px #ad1d1d99;
 }
 
 .dashboard-container {
     max-width: 1200px;
-    margin: 40px auto 0 auto;
-    padding: 2rem;
+    margin: 50px auto 0 auto;
+    padding: 2.2rem;
+    background: rgba(0,0,0,0.02);
+    border-radius: 30px;
+    box-shadow: 0 6px 32px #0001;
+    animation: fadeIn 0.7s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: none;}
 }
 
 .dashboard-title {
-    font-size: 2.1rem;
-    margin-bottom: 2rem;
+    font-size: 2.4rem;
+    margin-bottom: 2.5rem;
     font-weight: 700;
     text-align: center;
+    letter-spacing: 1px;
 }
 
 .tiles-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+    gap: 2.2rem;
     margin-top: 1rem;
 }
 
 .tile {
-    background: #8D0707;
+    background: var(--tile);
     color: #fff;
-    border-radius: 1.5rem;
-    box-shadow: 0 4px 24px #0003;
-    padding: 2.2rem 1.3rem 1.4rem 1.3rem;
+    border-radius: 1.7rem;
+    box-shadow: var(--tile-shadow);
+    padding: 2.3rem 1.3rem 1.5rem 1.3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition: background 0.2s, transform 0.2s;
+    transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
     cursor: pointer;
-    min-height: 170px;
+    min-height: 185px;
     text-align: center;
     text-decoration: none;
-    border: 0;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: tileAppear 0.7s forwards;
 }
+.tile:nth-child(1) {animation-delay:.04s;}
+.tile:nth-child(2) {animation-delay:.09s;}
+.tile:nth-child(3) {animation-delay:.14s;}
+.tile:nth-child(4) {animation-delay:.19s;}
+.tile:nth-child(5) {animation-delay:.24s;}
+.tile:nth-child(6) {animation-delay:.29s;}
+.tile:nth-child(7) {animation-delay:.34s;}
+.tile:nth-child(8) {animation-delay:.39s;}
+.tile:nth-child(9) {animation-delay:.44s;}
+
+@keyframes tileAppear {
+    from { transform: translateY(40px) scale(0.97); opacity: 0; }
+    to { transform: none; opacity: 1; }
+}
+
 .tile:hover, .tile:focus {
-    background: #a91e1e;
-    transform: translateY(-5px) scale(1.03);
+    background: var(--tile-hover);
+    transform: translateY(-6px) scale(1.035);
+    box-shadow: var(--tile-glow);
+    outline: none;
 }
+
 .tile .tile-icon {
-    font-size: 2.8rem;
-    margin-bottom: 0.7rem;
+    font-size: 3.2rem;
+    margin-bottom: 1.2rem;
+    text-shadow: 0 3px 12px #0002;
+    filter: drop-shadow(0 1px 4px #0003);
 }
 .tile-title {
     font-weight: 600;
-    font-size: 1.22rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.28rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.5px;
 }
 .tile-desc {
-    font-size: 1.04rem;
+    font-size: 1.08rem;
     color: #ffeaea;
+    opacity: 0.97;
 }
 
 @media (max-width: 800px) {
