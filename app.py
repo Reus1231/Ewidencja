@@ -11,6 +11,8 @@ from flask_login import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from flask_migrate import Migrate  # DODAJ TEN IMPORT!
+
 from forms import (
     LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm,
     WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
@@ -29,6 +31,8 @@ db.init_app(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+migrate = Migrate(app, db)
 
 @app.context_processor
 def inject_now():
