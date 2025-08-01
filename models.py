@@ -61,6 +61,7 @@ class Entry(db.Model):
     work_type_id = db.Column(db.Integer, db.ForeignKey('work_type.id'), nullable=False)
     hours = db.Column(db.Float, nullable=True, default=0.0)
     quantity = db.Column(db.Float, nullable=True, default=0.0)
+    piece_rate = db.Column(db.Float, nullable=True)   # <--- DODAJ TO
     variety_id = db.Column(db.Integer, db.ForeignKey('berry_variety.id'), nullable=True)
     field_id = db.Column(db.Integer, db.ForeignKey('field.id'), nullable=True)
     comment = db.Column(db.Text, nullable=True)
