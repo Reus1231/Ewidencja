@@ -1189,8 +1189,6 @@ def fast_entry():
         last_entries=last_entries
     )
 
-if __name__ == '__main__':
-    with app.app_context():
-        from flask_migrate import upgrade
-        upgrade()
-    app.run(debug=True, host='0.0.0.0')
+from flask_migrate import upgrade
+with app.app_context():
+    upgrade()
