@@ -76,7 +76,14 @@ def rozliczenie_czasu_pracy():
     presences = Presence.query.filter(Presence.date >= start_date, Presence.date <= end_date).all()
     entries = Entry.query.filter(Entry.date >= start_date, Entry.date <= end_date).all()
     harvests = DailyHarvest.query.filter(DailyHarvest.date >= start_date, DailyHarvest.date <= end_date).all()
-    fields = Field.query.all()
+    # TYLKO pola zbierane w zakresie dat:
+    fields = (
+        Field.query
+        .join(DailyHarvest, Field.id == DailyHarvest.field_id)
+        .filter(DailyHarvest.date >= start_date, DailyHarvest.date <= end_date)
+        .distinct()
+        .all()
+    )
 
     data = []
     for emp in employees:
