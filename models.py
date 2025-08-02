@@ -27,6 +27,7 @@ class Employee(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     entries = db.relationship('Entry', backref='employee', lazy=True, cascade="all, delete-orphan")
     harvests = db.relationship('DailyHarvest', backref='employee', lazy=True, cascade="all, delete-orphan")
+    team = db.Column(db.String(64), nullable=True)
 
 class Field(db.Model):
     id = db.Column(db.Integer, primary_key=True)
