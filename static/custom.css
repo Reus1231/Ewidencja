@@ -223,3 +223,39 @@ input[type="text"].form-control, input[type="number"].form-control, input[type="
     opacity: 1 !important;
     font-weight: 700;
 }
+
+/* Zawsze czytelny tekst w białych kartach podsumowań raportów */
+.card,
+.summary-card,
+.raport-card,
+.podsumowanie-card,
+.podsumowanie,
+.podsumowanie-raport,
+.podsumowanie-raport-pracownika,
+.podsumowanie-pracownika,
+.podsumowanie-box,
+.podsumowanie-row {
+    background: #fff !important;
+    color: #222 !important;
+}
+
+.card *,
+.summary-card *,
+.raport-card *,
+.podsumowanie-card *,
+.podsumowanie *,
+.podsumowanie-raport *,
+.podsumowanie-raport-pracownika *,
+.podsumowanie-pracownika *,
+.podsumowanie-box *,
+.podsumowanie-row * {
+    color: #222 !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+/* Opcjonalnie: wzmocnij wybrane napisy */
+.card b, .summary-card b, .raport-card b, .podsumowanie-card b, .podsumowanie-raport b {
+    font-weight: 700;
+    color: #111 !important;
+}
