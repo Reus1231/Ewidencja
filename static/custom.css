@@ -197,3 +197,29 @@ input[type="text"].form-control, input[type="number"].form-control, input[type="
     background: #33475b;
     border-radius: 7px;
 }
+
+/* Czytelność: czarny/dark tekst na białym tle wierszy tabeli */
+.table tbody tr, 
+.table-striped tbody tr, 
+.table-bordered tbody tr {
+    background: #fff !important;
+}
+
+.table tbody td,
+.table-striped tbody td,
+.table-bordered tbody td {
+    color: #222 !important;
+    opacity: 1 !important;
+    font-weight: 700;
+    text-shadow: none !important;
+    background: #fff !important;
+}
+
+/* Jeżeli w niektórych wierszach nadal jest wyblakły tekst (np. disabled, muted, secondary) */
+.table tbody td[class*="text-muted"], 
+.table tbody td[class*="secondary"], 
+.table tbody td[style*="opacity"] {
+    color: #222 !important;
+    opacity: 1 !important;
+    font-weight: 700;
+}
