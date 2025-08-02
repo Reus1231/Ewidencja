@@ -376,8 +376,47 @@ def dashboard():
 @app.route('/employees')
 @login_required
 def employees():
-    employees = Employee.query.all()
-    return render_template('employees.html', employees=employees)
+    # Obsługa filtrów (jeśli chcesz, możesz rozbudować)
+    q = request.args.get('q', '').strip()
+    team = request.args.get('team', '')
+    status = request.args.get('status', '')
+    selected_id = request.args.get('selected_id', type=int)
+
+    # Zespoły do filtrów
+    teams = db.session.query(Employee.team).distinct().all()
+    teams = [t[0] for t in teams if t[0]]
+
+    # Podstawowe zapytanie
+    query = Employee.query
+
+    # Filtrowanie po nazwie/pracowniku
+    if q:
+        query = query.filter(Employee.name.ilike(f"%{q}%"))
+
+    # Filtrowanie po zespole
+    if team:
+        query = query.filter(Employee.team == team)
+
+    # Filtrowanie po statusie
+    if status == 'active':
+        query = query.filter(Employee.is_active == True)
+    elif status == 'inactive':
+        query = query.filter(Employee.is_active == False)
+
+    employees = query.order_by(Employee.name).all()
+
+    # Pobierz wybranego pracownika (do szczegółów po prawej)
+    employee = None
+    if selected_id:
+        employee = Employee.query.get(selected_id)
+
+    return render_template(
+        'employees.html',
+        employees=employees,
+        employee=employee,
+        selected_id=selected_id,
+        teams=teams
+    )
 
 @app.route('/deactivate_employee/<int:employee_id>', methods=['POST'])
 @login_required
