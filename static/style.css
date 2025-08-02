@@ -32,7 +32,7 @@ body.dark-mode {
     --tile-glow: 0 0 18px #ad1d1d99;
 }
 
-/* Nowoczesny navbar - patrz base.html */
+/* Nowoczesny navbar */
 .navbar-custom {
     background: var(--navbar);
     min-height: 58px;
@@ -190,6 +190,28 @@ body.dark-mode {
     font-size: 1.08rem;
     color: #ffeaea;
     opacity: 0.97;
+}
+
+/* --- Personalizacja kafelków --- */
+.tile-employees     { background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%); }
+.tile-fields        { background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%); }
+.tile-varieties     { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+.tile-work-types    { background: linear-gradient(135deg, #7f53ac 0%, #647dee 100%); }
+.tile-harvests      { background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%); }
+.tile-entries       { background: linear-gradient(135deg, #43cea2 0%, #185a9d 100%); }
+.tile-reports       { background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%); }
+.tile-fast-harvest  { background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%); }
+
+.tile-employees:hover     { box-shadow: 0 0 24px #2193b055, 0 6px 18px #0003; }
+.tile-fields:hover        { box-shadow: 0 0 24px #56ab2f44, 0 6px 18px #0003; }
+.tile-varieties:hover     { box-shadow: 0 0 24px #ffd20044, 0 6px 18px #0003; }
+.tile-work-types:hover    { box-shadow: 0 0 24px #647dee44, 0 6px 18px #0003; }
+.tile-harvests:hover      { box-shadow: 0 0 24px #ff585844, 0 6px 18px #0003; }
+.tile-entries:hover       { box-shadow: 0 0 24px #185a9d44, 0 6px 18px #0003; }
+.tile-reports:hover       { box-shadow: 0 0 24px #ff6a0044, 0 6px 18px #0003; }
+.tile-fast-harvest:hover  { box-shadow: 0 0 24px #6a82fb44, 0 6px 18px #0003; }
+.tile-icon {
+    filter: drop-shadow(0 4px 12px #0004);
 }
 
 /* --- Nowoczesne sekcje i tabele (uniwersalne) --- */
