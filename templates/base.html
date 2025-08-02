@@ -15,7 +15,7 @@
     :root {
         --bg: #ffffff;
         --text: #222222;
-        --navbar: #dc3545;
+        --navbar: #6a0a0a;
         --footer: #f8f9fa;
     }
     body {
@@ -23,8 +23,79 @@
         color: var(--text);
         transition: background 0.3s, color 0.3s;
     }
-    .navbar {
-        background-color: var(--navbar) !important;
+    .navbar-custom {
+        background: var(--navbar);
+        min-height: 58px;
+        padding: 0 2vw 0 2vw;
+        box-shadow: 0 2px 16px #0004;
+        border-bottom: 2px solid #370606;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .navbar-custom .navbar-brand {
+        color: #ffeaea !important;
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: .5px;
+        padding: 0 1rem 0 0;
+    }
+    .navbar-custom .navbar-nav {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-left: 1.3rem;
+    }
+    .navbar-custom .nav-link, .navbar-custom .nav-item > a {
+        color: #fff !important;
+        font-weight: 400;
+        font-size: 1.07rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.7rem;
+        transition: background 0.12s, color 0.12s;
+        text-align: center;
+        margin-right: 0.1rem;
+    }
+    .navbar-custom .nav-link:hover,
+    .navbar-custom .nav-link.active,
+    .navbar-custom .nav-item > a:hover {
+        background: #a91e1e;
+        color: #fff !important;
+    }
+    .navbar-custom .btn-warning, .navbar-custom .btn-warning:focus {
+        background: #ff9800 !important;
+        color: #fff !important;
+        border-radius: 0.8rem;
+        border: none;
+        box-shadow: 0 2px 12px #d86f0080;
+        padding: 0.6rem 1.3rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        transition: background 0.13s;
+    }
+    .navbar-custom .btn-warning:hover {
+        background: #ffa726 !important;
+        color: #222 !important;
+    }
+    .navbar-custom .nav-avatar {
+        margin-left: 0.7rem;
+        border: 1.3px solid #fff2;
+        border-radius: 9px;
+        padding: 0.07em 0.32em 0.07em 0.32em;
+        background: #0003;
+    }
+    @media (max-width: 990px) {
+        .navbar-custom .navbar-nav {
+            gap: 0.1rem;
+        }
+        .navbar-custom .nav-link, .navbar-custom .nav-item > a {
+            padding: 0.4rem 0.7rem;
+            font-size: 0.99rem;
+        }
+        .navbar-custom .btn-warning {
+            padding: 0.45rem 1rem;
+            font-size: 0.99rem;
+        }
     }
     footer {
         background: var(--footer);
@@ -32,7 +103,7 @@
     body.dark-mode {
         --bg: #181b1f;
         --text: #f1f1f1;
-        --navbar: #630606;
+        --navbar: #4d0101;
         --footer: #222;
     }
     .custom-red {
@@ -55,7 +126,7 @@
     body.dark-mode .btn-close {
         filter: invert(1);
     }
-    body.dark-mode .navbar-nav .nav-link, 
+    body.dark-mode .navbar-nav .nav-link,
     body.dark-mode .navbar-brand {
         color: #f1f1f1 !important;
     }
@@ -67,41 +138,32 @@
 </head>
 <body>
     {% if not is_public %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('dashboard') }}">Ewidencja Borówek</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('employees') }}">Pracownicy</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('rozliczenie_czasu_pracy') }}">Rozliczenie czasu pracy</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('fields') }}">Pola</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('varieties') }}">Odmiany</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('work_types') }}">Typy pracy</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('harvests') }}">Dzienne zbiory</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('entries') }}">Wpisy pracy</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('employee_reports') }}">Raporty</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('fast_entry') }}">Szybki wpis zbiorów</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('daily_report') }}">Raport dzienny</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('presence_list') }}">Obecność</a></li>
-                        <li class="nav-item">
-                            <form action="{{ url_for('download_backup') }}" method="post" style="display:inline;">
-                                <button type="submit" class="btn btn-warning">Pobierz backup bazy</button>
-                            </form>
-                        </li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Wyloguj</a></li>
-                        <li class="nav-item">
-                            <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()">🌞</button>
-                        </li>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Zaloguj</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Rejestracja</a></li>
-                        <li class="nav-item">
-                            <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()">🌞</button>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
+    <nav class="navbar navbar-custom navbar-expand-lg mb-4">
+        <a class="navbar-brand" href="{{ url_for('dashboard') }}">Ewidencja Borówek</a>
+        <div class="navbar-nav">
+            {% if current_user.is_authenticated %}
+                <a class="nav-link{% if request.endpoint=='employees' %} active{% endif %}" href="{{ url_for('employees') }}">Pracownicy</a>
+                <a class="nav-link{% if request.endpoint=='rozliczenie_czasu_pracy' %} active{% endif %}" href="{{ url_for('rozliczenie_czasu_pracy') }}">Rozliczenie czasu pracy</a>
+                <a class="nav-link{% if request.endpoint=='fields' %} active{% endif %}" href="{{ url_for('fields') }}">Pola</a>
+                <a class="nav-link{% if request.endpoint=='varieties' %} active{% endif %}" href="{{ url_for('varieties') }}">Odmiany</a>
+                <a class="nav-link{% if request.endpoint=='work_types' %} active{% endif %}" href="{{ url_for('work_types') }}">Typy pracy</a>
+                <a class="nav-link{% if request.endpoint=='harvests' %} active{% endif %}" href="{{ url_for('harvests') }}">Dzienne zbiory</a>
+                <a class="nav-link{% if request.endpoint=='entries' %} active{% endif %}" href="{{ url_for('entries') }}">Wpisy pracy</a>
+                <a class="nav-link{% if request.endpoint=='employee_reports' %} active{% endif %}" href="{{ url_for('employee_reports') }}">Raporty</a>
+                <a class="nav-link{% if request.endpoint=='fast_entry' or request.endpoint=='fast_harvest' %} active{% endif %}" href="{{ url_for('fast_entry') }}">Szybki wpis zbiorów</a>
+                <a class="nav-link{% if request.endpoint=='daily_report' %} active{% endif %}" href="{{ url_for('daily_report') }}">Raport dzienny</a>
+                <a class="nav-link{% if request.endpoint=='presence_list' %} active{% endif %}" href="{{ url_for('presence_list') }}">Obecność</a>
+                <form action="{{ url_for('download_backup') }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-warning">Pobierz<br>backup bazy</button>
+                </form>
+                <a class="nav-link" href="{{ url_for('logout') }}">Wyloguj</a>
+                <span class="nav-avatar">🦁</span>
+                <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()" style="margin-left:0.7rem;">🌞</button>
+            {% else %}
+                <a class="nav-link{% if request.endpoint=='login' %} active{% endif %}" href="{{ url_for('login') }}">Zaloguj</a>
+                <a class="nav-link{% if request.endpoint=='register' %} active{% endif %}" href="{{ url_for('register') }}">Rejestracja</a>
+                <button id="theme-toggle" class="btn btn-outline-secondary ms-2" onclick="toggleTheme()" style="margin-left:0.7rem;">🌞</button>
+            {% endif %}
         </div>
     </nav>
     {% endif %}

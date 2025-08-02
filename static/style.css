@@ -8,7 +8,7 @@ body {
 :root {
     --bg: #ffffff;
     --text: #222222;
-    --navbar: #dc3545;
+    --navbar: #6a0a0a;
     --footer: #f8f9fa;
     --tile: #8D0707;
     --tile-hover: #ad1d1d;
@@ -24,7 +24,7 @@ body {
 body.dark-mode {
     --bg: #181b1f;
     --text: #f1f1f1;
-    --navbar: #630606;
+    --navbar: #4d0101;
     --footer: #222;
     --tile: #a91e1e;
     --tile-hover: #d32f2f;
@@ -32,6 +32,83 @@ body.dark-mode {
     --tile-glow: 0 0 18px #ad1d1d99;
 }
 
+/* Nowoczesny navbar - patrz base.html */
+.navbar-custom {
+    background: var(--navbar);
+    min-height: 58px;
+    padding: 0 2vw 0 2vw;
+    box-shadow: 0 2px 16px #0004;
+    border-bottom: 2px solid #370606;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.navbar-custom .navbar-brand {
+    color: #ffeaea !important;
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: .5px;
+    padding: 0 1rem 0 0;
+}
+.navbar-custom .navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-left: 1.3rem;
+}
+.navbar-custom .nav-link, .navbar-custom .nav-item > a {
+    color: #fff !important;
+    font-weight: 400;
+    font-size: 1.07rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.7rem;
+    transition: background 0.12s, color 0.12s;
+    text-align: center;
+    margin-right: 0.1rem;
+}
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active,
+.navbar-custom .nav-item > a:hover {
+    background: #a91e1e;
+    color: #fff !important;
+}
+.navbar-custom .btn-warning, .navbar-custom .btn-warning:focus {
+    background: #ff9800 !important;
+    color: #fff !important;
+    border-radius: 0.8rem;
+    border: none;
+    box-shadow: 0 2px 12px #d86f0080;
+    padding: 0.6rem 1.3rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+    transition: background 0.13s;
+}
+.navbar-custom .btn-warning:hover {
+    background: #ffa726 !important;
+    color: #222 !important;
+}
+.navbar-custom .nav-avatar {
+    margin-left: 0.7rem;
+    border: 1.3px solid #fff2;
+    border-radius: 9px;
+    padding: 0.07em 0.32em 0.07em 0.32em;
+    background: #0003;
+}
+@media (max-width: 990px) {
+    .navbar-custom .navbar-nav {
+        gap: 0.1rem;
+    }
+    .navbar-custom .nav-link, .navbar-custom .nav-item > a {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.99rem;
+    }
+    .navbar-custom .btn-warning {
+        padding: 0.45rem 1rem;
+        font-size: 0.99rem;
+    }
+}
+
+/* --- Dashboard --- */
 .dashboard-container {
     max-width: 1200px;
     margin: 50px auto 0 auto;
@@ -41,12 +118,10 @@ body.dark-mode {
     box-shadow: 0 6px 32px #0001;
     animation: fadeIn 0.7s;
 }
-
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(30px);}
     to { opacity: 1; transform: none;}
 }
-
 .dashboard-title {
     font-size: 2.4rem;
     margin-bottom: 2.5rem;
@@ -54,14 +129,12 @@ body.dark-mode {
     text-align: center;
     letter-spacing: 1px;
 }
-
 .tiles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
     gap: 2.2rem;
     margin-top: 1rem;
 }
-
 .tile {
     background: var(--tile);
     color: #fff;
@@ -91,19 +164,16 @@ body.dark-mode {
 .tile:nth-child(7) {animation-delay:.34s;}
 .tile:nth-child(8) {animation-delay:.39s;}
 .tile:nth-child(9) {animation-delay:.44s;}
-
 @keyframes tileAppear {
     from { transform: translateY(40px) scale(0.97); opacity: 0; }
     to { transform: none; opacity: 1; }
 }
-
 .tile:hover, .tile:focus {
     background: var(--tile-hover);
     transform: translateY(-6px) scale(1.035);
     box-shadow: var(--tile-glow);
     outline: none;
 }
-
 .tile .tile-icon {
     font-size: 3.2rem;
     margin-bottom: 1.2rem;
@@ -122,6 +192,97 @@ body.dark-mode {
     opacity: 0.97;
 }
 
+/* --- Nowoczesne sekcje i tabele (uniwersalne) --- */
+.section-box {
+    max-width: 1200px;
+    margin: 40px auto 0 auto;
+    background: #22272b;
+    border-radius: 24px;
+    box-shadow: 0 6px 32px #0006;
+    padding: 2.5rem 2rem 2.2rem 2rem;
+}
+.section-box h2 {
+    color: #caffca;
+    font-weight: 700;
+    margin-bottom: 1.4rem;
+    letter-spacing: .5px;
+}
+.add-btn {
+    background: #1ebc59;
+    color: #fff;
+    border: none;
+    border-radius: 0.7rem;
+    padding: 0.6rem 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.3rem;
+    transition: background 0.15s;
+    display: inline-block;
+}
+.add-btn:hover { background: #17a148; color: #fff; }
+.table-custom {
+    width: 100%;
+    border-radius: 1.1rem;
+    overflow: hidden;
+    background: #22272b;
+    box-shadow: 0 2px 12px #0003;
+    font-size: 1.03rem;
+}
+.table-custom th, .table-custom td {
+    padding: 0.7rem 0.75rem;
+    border: none;
+}
+.table-custom thead th {
+    background: #1c1f23;
+    color: #74ff74;
+    font-weight: 700;
+    border-bottom: 2px solid #222;
+}
+.table-custom tbody tr:nth-child(odd) {
+    background: #23282e;
+}
+.table-custom tbody tr:nth-child(even) {
+    background: #20242a;
+}
+.table-custom tbody td {
+    color: #f2f2f2;
+    vertical-align: middle;
+}
+.table-custom tbody tr:hover {
+    background: #232d2e;
+    transition: background 0.12s;
+}
+.action-btn {
+    border: none;
+    border-radius: 0.45rem;
+    padding: 0.37rem 0.85rem;
+    font-weight: 500;
+    margin: 0 0.11rem;
+    font-size: 0.97rem;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.13s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+}
+.action-edit   { background: #0db6f8; color: #fff; }
+.action-edit:hover   { background: #099dd0; }
+.action-del    { background: #f85449; color: #fff; }
+.action-del:hover    { background: #d82e22; }
+.action-disable { background: #ffa600; color: #fff; }
+.action-disable:hover { background: #c97d00; }
+@media (max-width: 990px) {
+    .navbar-custom .navbar-nav {
+        gap: 0.1rem;
+    }
+    .navbar-custom .nav-link, .navbar-custom .nav-item > a {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.99rem;
+    }
+    .navbar-custom .btn-warning {
+        padding: 0.45rem 1rem;
+        font-size: 0.99rem;
+    }
+}
 @media (max-width: 800px) {
     .dashboard-container {
         padding: 1rem;
@@ -133,4 +294,6 @@ body.dark-mode {
         padding: 1.1rem 0.7rem 1rem 0.7rem;
         min-height: 105px;
     }
+    .section-box { padding: 1.1rem 0.5rem; }
+    .table-custom th, .table-custom td { padding: 0.4rem 0.25rem; font-size: 0.98rem; }
 }
