@@ -1,62 +1,178 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Lista pracowników</h2>
-<a href="{{ url_for('add_employee') }}" class="btn btn-success mb-3">Dodaj pracownika</a>
-{% if employees %}
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>ID pracownika</th> <!-- nowa kolumna -->
-                <th>Imię i nazwisko</th>
+<div class="section-box" style="display: flex; gap: 2rem; flex-wrap: wrap;">
+  <!-- Lewa kolumna: lista pracowników i akcje -->
+  <div style="flex: 1 1 320px; min-width: 260px; max-width: 340px;">
+    <h2>Pracownicy</h2>
+    <form class="mb-3" method="get" action="">
+      <input type="text" class="form-control" placeholder="Szukaj..." name="q" value="{{ request.args.get('q','') }}">
+    </form>
+    <div class="mb-3 d-flex gap-2">
+      <a href="{{ url_for('add_employee') }}" class="btn btn-success w-50"><i class="fas fa-plus"></i> Dodaj</a>
+      <a href="{{ url_for('export_employees_excel') }}" class="btn btn-outline-primary w-50"><i class="fas fa-file-excel"></i> Excel</a>
+    </div>
+    <ul class="list-group" style="max-height: 480px; overflow-y:auto;">
+      {% for e in employees %}
+      <a href="{{ url_for('employees', selected_id=e.id) }}" class="list-group-item list-group-item-action{% if e.id == selected_id %} active{% endif %}">
+        <span class="badge bg-secondary me-2">{{ e.barcode or e.external_id }}</span>
+        {{ e.name }}
+      </a>
+      {% endfor %}
+    </ul>
+    <div class="mt-2 text-muted small">Pracownicy: {{ employees|length }}</div>
+  </div>
+  <!-- Prawa kolumna: szczegóły pracownika -->
+  <div style="flex:3 1 480px; min-width:320px;">
+    {% if employee %}
+    <form method="post" enctype="multipart/form-data" class="employee-card">
+      <div class="row">
+        <div class="col-md-3 text-center">
+          <img src="{{ employee.photo_url or url_for('static', filename='avatar_placeholder.png') }}" class="rounded mb-2" style="width: 120px; height:120px; object-fit:cover; border:3px solid #eee;">
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm">Dodaj zdjęcie</button>
+            <a href="{{ url_for('delete_employee', id=employee.id) }}" class="btn btn-outline-danger btn-sm">Usuń</a>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div class="row g-2">
+            <div class="col-sm-4">
+              <label class="form-label mb-0">Kod kreskowy</label>
+              <input type="text" class="form-control" name="barcode" value="{{ employee.barcode }}">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label mb-0">Nazwisko</label>
+              <input type="text" class="form-control" name="surname" value="{{ employee.surname }}">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label mb-0">Imiona</label>
+              <input type="text" class="form-control" name="name" value="{{ employee.name }}">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label mb-0">Data zatrudnienia</label>
+              <input type="date" class="form-control" name="hire_date" value="{{ employee.hire_date }}">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label mb-0">Data zakończenia pracy</label>
+              <input type="date" class="form-control" name="end_date" value="{{ employee.end_date }}">
+            </div>
+            <div class="col-sm-4">
+              <label class="form-label mb-0">Zespół</label>
+              <input type="text" class="form-control" name="team" value="{{ employee.team }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label mb-0">Kod skrzynki</label>
+              <input type="text" class="form-control" name="box_barcode" value="{{ employee.box_barcode }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label mb-0">Telefon</label>
+              <input type="text" class="form-control" name="phone" value="{{ employee.phone }}">
+            </div>
+          </div>
+          <div class="row mt-2 g-2">
+            <div class="col-sm-4">
+              <span class="badge bg-success w-100">Stan urlopu: {{ employee.vacation_days or 0 }}</span>
+            </div>
+            <div class="col-sm-4">
+              <span class="badge bg-info w-100">Stan konta: {{ employee.account_balance or 0.00 }} zł</span>
+            </div>
+            <div class="col-sm-4">
+              <span class="badge bg-primary w-100">Stawka: {{ employee.hourly_rate or '0.00' }}/godz.</span>
+            </div>
+          </div>
+          <div class="mt-3 text-end">
+            <button type="submit" class="btn btn-primary px-5">Zapisz</button>
+          </div>
+        </div>
+      </div>
+      <!-- Zakładki (taby) -->
+      <ul class="nav nav-tabs mt-4" id="empTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="umowy-tab" data-bs-toggle="tab" data-bs-target="#umowy" type="button" role="tab">Umowy</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="osobowe-tab" data-bs-toggle="tab" data-bs-target="#osobowe" type="button" role="tab">Dane osobowe</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="adres-tab" data-bs-toggle="tab" data-bs-target="#adres" type="button" role="tab">Adres</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="urlop-tab" data-bs-toggle="tab" data-bs-target="#urlop" type="button" role="tab">Urlop</button>
+        </li>
+      </ul>
+      <div class="tab-content bg-dark-subtle mt-2 p-3 rounded" id="empTabContent">
+        <div class="tab-pane fade show active" id="umowy" role="tabpanel">
+          <!-- Tabela umów -->
+          <table class="table table-sm table-striped table-bordered table-custom">
+            <thead>
+              <tr>
+                <th>Nr umowy</th>
+                <th>Data od</th>
+                <th>Rodzaj umowy</th>
                 <th>Stawka godzinowa</th>
-                <th>Stawka akordowa</th>
-                <th>Status</th>
+                <th>Stawka dzienna</th>
+                <th>Wynagrodzenie miesięczne</th>
                 <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for emp in employees %}
-            <tr>
-                <td>{{ emp.id }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in employee.contracts %}
+              <tr>
+                <td>{{ c.number }}</td>
+                <td>{{ c.start_date }}</td>
+                <td>{{ c.type }}</td>
+                <td>{{ c.hourly_rate }}</td>
+                <td>{{ c.daily_rate }}</td>
+                <td>{{ c.monthly_rate }}</td>
                 <td>
-                    {% if emp.external_id %}
-                        {{ emp.external_id }}
-                    {% else %}
-                        -
-                    {% endif %}
+                  <a href="#" class="btn btn-outline-secondary btn-sm">Edytuj</a>
+                  <a href="#" class="btn btn-outline-danger btn-sm">Usuń</a>
                 </td>
-                <td>
-                    {% if emp.external_id %}
-                        {{ emp.external_id }} -
-                    {% else %}
-                        {{ emp.id }} -
-                    {% endif %}
-                    {{ emp.name }}
-                </td>
-                <td>{{ "%.2f"|format(emp.hourly_rate) }}</td>
-                <td>{{ "%.2f"|format(emp.piece_rate) }}</td>
-                <td>{% if emp.is_active %}Aktywny{% else %}Nieaktywny{% endif %}</td>
-                <td>
-                    <a href="{{ url_for('edit_employee', employee_id=emp.id) }}" class="btn btn-sm btn-info">Edytuj</a>
-                    <form action="{{ url_for('delete_employee', employee_id=emp.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Czy na pewno chcesz usunąć pracownika?');">
-                        <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
-                    </form>
-                    {% if emp.is_active %}
-                    <form action="{{ url_for('deactivate_employee', employee_id=emp.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-warning">Dezaktywuj</button>
-                    </form>
-                    {% else %}
-                    <form action="{{ url_for('activate_employee', employee_id=emp.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-success">Aktywuj</button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <div class="alert alert-info">Brak pracowników.</div>
-{% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <button class="btn btn-primary btn-sm">Nowa umowa</button>
+        </div>
+        <div class="tab-pane fade" id="osobowe" role="tabpanel">
+          <!-- Dane osobowe -->
+          <div class="row g-2">
+            <div class="col-sm-6">
+              <label class="form-label">PESEL</label>
+              <input type="text" class="form-control" value="{{ employee.pesel }}">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">Obywatelstwo</label>
+              <input type="text" class="form-control" value="{{ employee.citizenship }}">
+            </div>
+            <!-- Dodaj inne pola -->
+          </div>
+        </div>
+        <div class="tab-pane fade" id="adres" role="tabpanel">
+          <!-- Adres -->
+          <div class="row g-2">
+            <div class="col-sm-6">
+              <label class="form-label">Ulica</label>
+              <input type="text" class="form-control" value="{{ employee.street }}">
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">Miasto</label>
+              <input type="text" class="form-control" value="{{ employee.city }}">
+            </div>
+            <!-- Dodaj inne pola -->
+          </div>
+        </div>
+        <div class="tab-pane fade" id="urlop" role="tabpanel">
+          <!-- Urlop -->
+          <div>
+            <p>Wypracowany: <b>{{ employee.vacation_worked or 0 }}</b></p>
+            <p>Wykorzystany: <b>{{ employee.vacation_used or 0 }}</b></p>
+          </div>
+        </div>
+      </div>
+    </form>
+    {% else %}
+    <div class="alert alert-info mt-4">Wybierz pracownika z listy po lewej, aby zobaczyć szczegóły.</div>
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
