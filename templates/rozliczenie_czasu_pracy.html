@@ -1,41 +1,80 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Rozliczenie czasu pracy</h2>
-<form method="get" class="mb-4">
-  <label>Data od: <input type="date" name="start_date" value="{{ start_date }}"></label>
-  <label>Data do: <input type="date" name="end_date" value="{{ end_date }}"></label>
-  <button type="submit" class="btn btn-primary">Pokaż</button>
-</form>
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Kod PR</th><th>Imię</th><th>Nazwisko</th><th>START</th><th>Przerwa</th><th>STOP</th>
-      <th>Praca na akord</th><th>Praca na godziny</th><th>Suma czasu pracy</th>
-      {% for field in fields %}<th>{{ field.name }}</th>{% endfor %}
-      <th>Sztuki razem</th><th>Razem waga</th><th>Płaca za akord</th>
-      <th>Płaca za godzinę</th><th>Wynagrodzenie brutto</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for row in data %}
-    <tr>
-      <td>{{ row.kod_pr }}</td>
-      <td>{{ row.imie }}</td>
-      <td>{{ row.nazwisko }}</td>
-      <td>{{ row.start }}</td>
-      <td>{{ row.przerwa }}</td>
-      <td>{{ row.stop }}</td>
-      <td>{{ row.praca_akord }}</td>
-      <td>{{ row.praca_godziny }}</td>
-      <td>{{ row.suma_czasu }}</td>
-      {% for field in fields %}<td>{{ row.field_weights[field.name]|round(2) }}</td>{% endfor %}
-      <td>{{ row.sztuki_razem }}</td>
-      <td>{{ row.razem_waga }}</td>
-      <td>{{ row.placa_akord }}</td>
-      <td>{{ row.placa_godziny }}</td>
-      <td>{{ row.wynagrodzenie_brutto }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="container-xl py-4">
+  <div class="card shadow-lg border-0 rounded-4 bg-light">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-4">
+        <i class="fas fa-clock fa-2x text-primary me-3"></i>
+        <h2 class="mb-0 fw-bold">Rozliczenie czasu pracy</h2>
+      </div>
+      <form method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-sm-4">
+          <label class="form-label fw-semibold" for="start_date">
+            <i class="fas fa-calendar-alt me-1"></i> Data od:
+          </label>
+          <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date }}">
+        </div>
+        <div class="col-sm-4">
+          <label class="form-label fw-semibold" for="end_date">
+            <i class="fas fa-calendar-alt me-1"></i> Data do:
+          </label>
+          <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date }}">
+        </div>
+        <div class="col-sm-4 d-grid">
+          <button type="submit" class="btn btn-primary btn-lg shadow">
+            <i class="fas fa-search me-2"></i> Pokaż
+          </button>
+        </div>
+      </form>
+      <div class="table-responsive rounded-3 shadow-sm">
+        <table class="table table-hover align-middle mb-0 bg-white" style="min-width:1200px;">
+          <thead class="sticky-top bg-primary text-white">
+            <tr>
+              <th class="text-center">Kod PR</th>
+              <th>Imię</th>
+              <th>Nazwisko</th>
+              <th>START</th>
+              <th>Przerwa</th>
+              <th>STOP</th>
+              <th>Praca na akord</th>
+              <th>Praca na godziny</th>
+              <th>Suma czasu pracy</th>
+              {% for field in fields %}
+                <th>{{ field.name }}</th>
+              {% endfor %}
+              <th>Sztuki razem</th>
+              <th>Razem waga</th>
+              <th>Płaca za akord</th>
+              <th>Płaca za godzinę</th>
+              <th>Wynagrodzenie brutto</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+            <tr>
+              <td class="text-center fw-bold">{{ row.kod_pr }}</td>
+              <td>{{ row.imie }}</td>
+              <td>{{ row.nazwisko }}</td>
+              <td>{{ row.start }}</td>
+              <td>{{ row.przerwa }}</td>
+              <td>{{ row.stop }}</td>
+              <td class="text-end">{{ row.praca_akord }}</td>
+              <td class="text-end">{{ row.praca_godziny }}</td>
+              <td>{{ row.suma_czasu }}</td>
+              {% for field in fields %}
+                <td class="text-end">{{ row.field_weights[field.name]|round(2) }}</td>
+              {% endfor %}
+              <td class="text-end">{{ row.sztuki_razem }}</td>
+              <td class="text-end">{{ row.razem_waga }}</td>
+              <td class="text-end text-success">{{ row.placa_akord }}</td>
+              <td class="text-end text-primary">{{ row.placa_godziny }}</td>
+              <td class="text-end fw-bold text-dark">{{ row.wynagrodzenie_brutto }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
