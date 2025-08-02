@@ -1,72 +1,208 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="section-box">
-    <h2>Lista pracowników</h2>
-    <a href="{{ url_for('add_employee') }}" class="add-btn mb-3"><i class="fas fa-plus"></i> Dodaj pracownika</a>
-    {% if employees %}
-        <div class="table-responsive">
-            <table class="table-custom">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>ID pracownika</th>
-                        <th>Imię i nazwisko</th>
-                        <th>Stawka godzinowa</th>
-                        <th>Stawka akordowa</th>
-                        <th>Status</th>
-                        <th>Akcje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for emp in employees %}
-                    <tr>
-                        <td>{{ emp.id }}</td>
-                        <td>
-                            {% if emp.external_id %}
-                                {{ emp.external_id }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if emp.external_id %}
-                                {{ emp.external_id }} -
-                            {% else %}
-                                {{ emp.id }} -
-                            {% endif %}
-                            {{ emp.name }}
-                        </td>
-                        <td>{{ "%.2f"|format(emp.hourly_rate) }}</td>
-                        <td>{{ "%.2f"|format(emp.piece_rate) }}</td>
-                        <td>
-                            {% if emp.is_active %}
-                                <span style="color:#6fff6f;font-weight:600;">Aktywny</span>
-                            {% else %}
-                                <span style="color:#ff7676;font-weight:600;">Nieaktywny</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{{ url_for('edit_employee', employee_id=emp.id) }}" class="action-btn action-edit"><i class="fas fa-pen"></i> Edytuj</a>
-                            <form action="{{ url_for('delete_employee', employee_id=emp.id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Czy na pewno chcesz usunąć pracownika?');">
-                                <button type="submit" class="action-btn action-del"><i class="fas fa-trash"></i> Usuń</button>
-                            </form>
-                            {% if emp.is_active %}
-                                <form action="{{ url_for('deactivate_employee', employee_id=emp.id) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="action-btn action-disable"><i class="fas fa-user-slash"></i> Dezaktywuj</button>
-                                </form>
-                            {% else %}
-                                <form action="{{ url_for('activate_employee', employee_id=emp.id) }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="action-btn action-edit"><i class="fas fa-user-check"></i> Aktywuj</button>
-                                </form>
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+  <div class="row g-3">
+    <!-- Lewy panel: Filtry, wyszukiwarka i lista pracowników -->
+    <div class="col-lg-4 col-md-5">
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title mb-3">Filtry</h4>
+          <form method="get" class="mb-3 d-flex flex-column gap-2">
+            <input type="text" name="q" class="form-control" placeholder="Szukaj pracownika..." value="{{ request.args.get('q', '') }}">
+            <select name="team" class="form-select">
+              <option value="">Wszystkie zespoły</option>
+              {% for team in teams %}
+                <option value="{{ team }}" {% if request.args.get('team') == team %}selected{% endif %}>{{ team }}</option>
+              {% endfor %}
+            </select>
+            <select name="status" class="form-select">
+              <option value="">Wszyscy</option>
+              <option value="active" {% if request.args.get('status') == 'active' %}selected{% endif %}>Aktywni</option>
+              <option value="inactive" {% if request.args.get('status') == 'inactive' %}selected{% endif %}>Nieaktywni</option>
+            </select>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-filter"></i> Filtruj</button>
+          </form>
+          <a href="{{ url_for('add_employee') }}" class="btn btn-success w-100 mb-2"><i class="fas fa-plus"></i> Dodaj pracownika</a>
         </div>
-    {% else %}
-        <div class="alert alert-info">Brak pracowników.</div>
-    {% endif %}
+      </div>
+      <div class="list-group shadow-sm" style="max-height: 475px; overflow-y: auto;">
+        {% for emp in employees %}
+        <a href="{{ url_for('employees', selected_id=emp.id) }}" class="list-group-item list-group-item-action d-flex align-items-center gap-2 {% if emp.id==selected_id %}active{% endif %}">
+          {% if emp.photo_url %}
+            <img src="{{ emp.photo_url }}" alt="Zdjęcie" class="rounded-circle" style="width:36px;height:36px;object-fit:cover;">
+          {% else %}
+            <span class="rounded-circle bg-secondary d-inline-flex justify-content-center align-items-center" style="width:36px;height:36px;color:#fff;"> <i class="fas fa-user"></i> </span>
+          {% endif %}
+          <span>
+            <span class="badge bg-light text-dark me-1">{{ emp.external_id or emp.id }}</span>
+            {{ emp.name }}
+          </span>
+        </a>
+        {% endfor %}
+      </div>
+      <div class="mt-2 text-muted small">Liczba pracowników: {{ employees|length }}</div>
+    </div>
+    <!-- Prawy panel: Szczegóły pracownika -->
+    <div class="col-lg-8 col-md-7">
+      {% if employee %}
+      <form method="post" enctype="multipart/form-data" class="employee-card">
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-3 text-center mb-3 mb-md-0">
+                <img src="{{ employee.photo_url or url_for('static', filename='avatar_placeholder.png') }}" class="rounded mb-2" style="width: 110px; height:110px; object-fit:cover; border:3px solid #eee;">
+                <div class="d-grid gap-2">
+                  <label class="btn btn-outline-secondary btn-sm mb-1">
+                    <i class="fas fa-camera"></i> Zmień zdjęcie
+                    <input type="file" name="photo" accept="image/*" class="d-none" onchange="this.form.submit()">
+                  </label>
+                  <a href="{{ url_for('delete_employee', id=employee.id) }}" class="btn btn-outline-danger btn-sm">Usuń pracownika</a>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <div class="row g-2">
+                  <div class="col-sm-4">
+                    <label class="form-label mb-0">Kod kreskowy</label>
+                    <input type="text" class="form-control" name="barcode" value="{{ employee.barcode }}">
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label mb-0">Nazwisko</label>
+                    <input type="text" class="form-control" name="surname" value="{{ employee.surname }}">
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label mb-0">Imiona</label>
+                    <input type="text" class="form-control" name="name" value="{{ employee.name }}">
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label mb-0">Data zatrudnienia</label>
+                    <input type="date" class="form-control" name="hire_date" value="{{ employee.hire_date }}">
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label mb-0">Data zakończenia pracy</label>
+                    <input type="date" class="form-control" name="end_date" value="{{ employee.end_date }}">
+                  </div>
+                  <div class="col-sm-4">
+                    <label class="form-label mb-0">Zespół</label>
+                    <select class="form-select" name="team">
+                      <option value="">-</option>
+                      {% for team in teams %}
+                        <option value="{{ team }}" {% if employee.team == team %}selected{% endif %}>{{ team }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label mb-0">Kod skrzynki</label>
+                    <input type="text" class="form-control" name="box_barcode" value="{{ employee.box_barcode }}">
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label mb-0">Telefon</label>
+                    <input type="text" class="form-control" name="phone" value="{{ employee.phone }}">
+                  </div>
+                </div>
+                <div class="row mt-2 g-2">
+                  <div class="col-sm-4">
+                    <span class="badge bg-success w-100">Urlop: {{ employee.vacation_days or 0 }}</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <span class="badge bg-info w-100">Konto: {{ employee.account_balance or 0.00 }} zł</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <span class="badge bg-primary w-100">Stawka: {{ employee.hourly_rate or '0.00' }}/godz.</span>
+                  </div>
+                </div>
+                <div class="mt-3 text-end">
+                  <button type="submit" class="btn btn-primary px-5">Zapisz</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Zakładki -->
+        <ul class="nav nav-tabs mt-4" id="empTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="umowy-tab" data-bs-toggle="tab" data-bs-target="#umowy" type="button" role="tab">Umowy</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="osobowe-tab" data-bs-toggle="tab" data-bs-target="#osobowe" type="button" role="tab">Dane osobowe</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="adres-tab" data-bs-toggle="tab" data-bs-target="#adres" type="button" role="tab">Adres</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="urlop-tab" data-bs-toggle="tab" data-bs-target="#urlop" type="button" role="tab">Urlop</button>
+          </li>
+        </ul>
+        <div class="tab-content bg-dark-subtle mt-2 p-3 rounded" id="empTabContent">
+          <div class="tab-pane fade show active" id="umowy" role="tabpanel">
+            <table class="table table-sm table-striped table-bordered table-custom">
+              <thead>
+                <tr>
+                  <th>Nr umowy</th>
+                  <th>Data od</th>
+                  <th>Rodzaj</th>
+                  <th>Stawka godzinowa</th>
+                  <th>Stawka dzienna</th>
+                  <th>Wynagrodzenie miesięczne</th>
+                  <th>Akcje</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in employee.contracts %}
+                <tr>
+                  <td>{{ c.number }}</td>
+                  <td>{{ c.start_date }}</td>
+                  <td>{{ c.type }}</td>
+                  <td>{{ c.hourly_rate }}</td>
+                  <td>{{ c.daily_rate }}</td>
+                  <td>{{ c.monthly_rate }}</td>
+                  <td>
+                    <a href="#" class="btn btn-outline-secondary btn-sm">Edytuj</a>
+                    <a href="#" class="btn btn-outline-danger btn-sm">Usuń</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button class="btn btn-primary btn-sm">Nowa umowa</button>
+          </div>
+          <div class="tab-pane fade" id="osobowe" role="tabpanel">
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <label class="form-label">PESEL</label>
+                <input type="text" class="form-control" value="{{ employee.pesel }}">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label">Obywatelstwo</label>
+                <input type="text" class="form-control" value="{{ employee.citizenship }}">
+              </div>
+              <!-- Dodaj inne pola -->
+            </div>
+          </div>
+          <div class="tab-pane fade" id="adres" role="tabpanel">
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <label class="form-label">Ulica</label>
+                <input type="text" class="form-control" value="{{ employee.street }}">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label">Miasto</label>
+                <input type="text" class="form-control" value="{{ employee.city }}">
+              </div>
+              <!-- Dodaj inne pola -->
+            </div>
+          </div>
+          <div class="tab-pane fade" id="urlop" role="tabpanel">
+            <div>
+              <p>Wypracowany: <b>{{ employee.vacation_worked or 0 }}</b></p>
+              <p>Wykorzystany: <b>{{ employee.vacation_used or 0 }}</b></p>
+            </div>
+          </div>
+        </div>
+      </form>
+      {% else %}
+        <div class="alert alert-info mt-4">Wybierz pracownika z listy po lewej, aby zobaczyć szczegóły.</div>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}
