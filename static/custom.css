@@ -22,13 +22,13 @@ body {
     to { opacity: 1; transform: none;}
 }
 
-/* Nowoczesne tabele na ciemnym tle */
+/* Nowoczesne tabele na ciemnym tle z poprawioną widocznością */
 .table, .table-bordered, .table-striped {
     background: rgba(30,36,49,0.99) !important;
     border-radius: 16px !important;
     box-shadow: 0 3px 16px #131d2b99;
     overflow: hidden;
-    color: #e9eef3;
+    color: #e8f0fc !important; /* WYRAŹNY jasny tekst */
 }
 .table th, .table td {
     border: none !important;
@@ -36,7 +36,10 @@ body {
     vertical-align: middle;
     font-size: 1.07em;
     backdrop-filter: blur(4px);
-    color: #e9eef3;
+    color: #e8f0fc !important;   /* WYRAŹNY jasny tekst w każdej komórce */
+    font-weight: 500;
+    opacity: 1 !important;       /* Pełna widoczność */
+    text-shadow: 0 1px 2px #161c2433;
 }
 .table thead th {
     background: linear-gradient(90deg, #222b39 60%, #263347 100%) !important;
@@ -44,13 +47,15 @@ body {
     letter-spacing: 0.5px;
     font-size: 1.09em;
     font-weight: 600;
+    opacity: 1 !important;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: rgba(26, 29, 36, 0.82) !important;
 }
 .table-hover tbody tr:hover {
     background-color: #16202b !important;
-    transition: background 0.14s;
+    color: #fff !important;
+    opacity: 1 !important;
 }
 
 /* Modern Card/Panel look */
