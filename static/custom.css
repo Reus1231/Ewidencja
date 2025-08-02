@@ -1,0 +1,174 @@
+/* Ogólne odświeżenie dla wszystkich paneli */
+body {
+    background: #f4f8fd;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+/* Pracownicy */
+#employees .card,
+#employees .list-group,
+#employees .employee-card,
+#employees .table {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px #b5c6e0;
+    border: none;
+}
+#employees .list-group-item.active {
+    background: #1976d2 !important;
+    color: #fff !important;
+    border: none;
+}
+#employees .list-group-item {
+    border: none;
+    transition: background 0.16s;
+}
+#employees .list-group-item:hover {
+    background: #e3e8f0;
+}
+#employees h2, #employees h4, #employees .card-title {
+    color: #1976d2;
+    font-weight: 700;
+}
+#employees .badge {
+    border-radius: 0.7em;
+    font-size: 0.94em;
+    padding: 0.32em 0.7em;
+}
+#employees .btn-primary, #employees .btn-success {
+    border-radius: 0.7em;
+    font-weight: 600;
+}
+#employees .btn-outline-danger {
+    border-radius: 0.7em;
+}
+
+/* Rozliczenie czasu pracy */
+#rozliczenie_czasu_pracy .card,
+#rozliczenie_czasu_pracy .table-responsive,
+#rozliczenie_czasu_pracy .table {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px #b5c6e0;
+    border: none;
+}
+#rozliczenie_czasu_pracy h2 {
+    color: #135ab6;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+#rozliczenie_czasu_pracy thead {
+    background: #1976d2 !important;
+    color: #fff;
+    font-weight: 600;
+}
+#rozliczenie_czasu_pracy .table tbody tr:hover {
+    background: #f2f7fd;
+    transition: background 0.12s;
+}
+#rozliczenie_czasu_pracy .table th, #rozliczenie_czasu_pracy .table td {
+    vertical-align: middle;
+    font-size: 1.05em;
+}
+#rozliczenie_czasu_pracy .table th {
+    text-align: center;
+}
+
+/* Pola */
+#fields .table,
+#fields .table th,
+#fields .table td {
+    background: #f6fff6;
+    border-radius: 14px !important;
+    font-size: 1.05em;
+}
+#fields h2 { color: #30844a; }
+
+/* Odmiany */
+#varieties .table,
+#varieties .table th,
+#varieties .table td {
+    background: #fffbe7;
+    border-radius: 14px !important;
+    font-size: 1.05em;
+}
+#varieties h2 { color: #d69e12; }
+
+/* Typy pracy */
+#work_types .table,
+#work_types .table th,
+#work_types .table td {
+    background: #f9f4ff;
+    border-radius: 14px !important;
+    font-size: 1.05em;
+}
+#work_types h2 { color: #8244a5; }
+
+/* Szybki wpis zbiorów */
+#fast_harvest .card, #fast_harvest .table,
+#fast_harvest .form-control, #fast_harvest .btn {
+    background: #e3f7fc;
+    border-radius: 14px;
+    box-shadow: 0 4px 18px #b3e5fc;
+    border: none;
+}
+#fast_harvest h2, #fast_harvest h3 {
+    color: #039be5;
+    font-weight: bold;
+}
+#fast_harvest .btn-success {
+    background: #039be5;
+    border: none;
+    font-weight: 600;
+}
+
+/* Rejestracja obecności & lista obecności */
+#presence .table, #presence_list .table,
+#presence .form-control, #presence_list .form-control {
+    background: #f5f5f5;
+    border-radius: 14px;
+    box-shadow: 0 3px 14px #bbb;
+    border: none;
+}
+#presence h2, #presence_list h2 { color: #607d8b; }
+
+/* Raport dzienny */
+#daily_report .table, #daily_report .form-control {
+    background: #fff9f1;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px #ffecb3;
+    border: none;
+}
+#daily_report h2 { color: #e65100; }
+
+/* Lista dziennych zbiorów */
+#daily_harvest_list .table {
+    background: #f3e5f5;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px #ce93d8;
+    border: none;
+}
+#daily_harvest_list h2 { color: #6a1b9a; }
+
+/* Wspólne nowoczesne style */
+.table th, .table td {
+    border: none !important;
+    padding: 0.7em 0.5em !important;
+}
+.btn, .form-control, .form-select {
+    border-radius: 0.6em !important;
+}
+input.form-control, select.form-control, .form-select, textarea.form-control {
+    box-shadow: 0 1px 6px #e0e7ef50;
+    border: 1px solid #e0e7ef;
+}
+input.form-control:focus, select.form-control:focus, .form-select:focus, textarea.form-control:focus {
+    outline: 2px solid #1976d2;
+    box-shadow: 0 0 0 2px #1976d2;
+}
+.card, .table, .list-group, .form-control, .btn {
+    transition: box-shadow 0.12s, border 0.12s, background 0.13s;
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9fbff !important;
+}

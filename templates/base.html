@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Własny styl -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Nowoczesne style dla zakładek -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
     <style>
     :root {
         --bg: #ffffff;
@@ -108,7 +110,7 @@
     }
     </style>
 </head>
-<body>
+<body id="{% if request.endpoint %}{{ request.endpoint }}{% endif %}">
     {% if not is_public %}
     <nav class="navbar navbar-custom navbar-expand-lg mb-4">
         <a class="navbar-brand" href="{{ url_for('dashboard') }}">Ewidencja Borówek</a>
