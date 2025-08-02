@@ -1,4 +1,6 @@
-/* Ciemny, nowoczesny motyw glassmorphism dla wszystkich paneli */
+/* CIEMNY MOTYW GLASSMORPHISM DLA APLIKACJI PRACOWNICZEJ */
+
+/* 1. TŁO I OGÓLNY STYL */
 body {
     background: linear-gradient(135deg, #181b1f 0%, #232b34 100%);
     min-height: 100vh;
@@ -6,7 +8,7 @@ body {
     color: #f3f5f6;
 }
 
-/* Panel główny, sekcje, dashboard */
+/* 2. PANELE I SEKCJE */
 .container, .section-box, .dashboard-container {
     background: rgba(34, 40, 52, 0.90);
     border-radius: 24px;
@@ -22,13 +24,13 @@ body {
     to { opacity: 1; transform: none;}
 }
 
-/* Nowoczesne tabele na ciemnym tle z poprawioną widocznością */
+/* 3. TABELA – WIDOCZNOŚĆ I KONTRAST */
 .table, .table-bordered, .table-striped {
     background: rgba(30,36,49,0.99) !important;
     border-radius: 16px !important;
     box-shadow: 0 3px 16px #131d2b99;
     overflow: hidden;
-    color: #e8f0fc !important; /* WYRAŹNY jasny tekst */
+    color: #e8f0fc !important;
 }
 .table th, .table td {
     border: none !important;
@@ -36,9 +38,9 @@ body {
     vertical-align: middle;
     font-size: 1.07em;
     backdrop-filter: blur(4px);
-    color: #e8f0fc !important;   /* WYRAŹNY jasny tekst w każdej komórce */
+    color: #e8f0fc !important;
     font-weight: 500;
-    opacity: 1 !important;       /* Pełna widoczność */
+    opacity: 1 !important;
     text-shadow: 0 1px 2px #161c2433;
 }
 .table thead th {
@@ -58,23 +60,111 @@ body {
     opacity: 1 !important;
 }
 
-/* Modern Card/Panel look */
-.card, .card-body {
-    background: rgba(34, 40, 52, 0.95) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 4px 28px #10151a99;
-    border: none !important;
-    backdrop-filter: blur(8px) saturate(160%);
-    color: #f3f5f6;
+/* 4. BIAŁE WIERSZE – CZARNY TEKST (PODSUMOWANIA, RAPORTY) */
+.table tbody tr, 
+.table-striped tbody tr, 
+.table-bordered tbody tr {
+    background: #fff !important;
+}
+.table tbody td,
+.table-striped tbody td,
+.table-bordered tbody td {
+    color: #222 !important;
+    opacity: 1 !important;
+    font-weight: 700;
+    text-shadow: none !important;
+    background: #fff !important;
+}
+.table tbody td[class*="text-muted"], 
+.table tbody td[class*="secondary"], 
+.table tbody td[style*="opacity"] {
+    color: #222 !important;
+    opacity: 1 !important;
+    font-weight: 700;
 }
 
+/* 5. KARTY/BOXY PODSUMOWAŃ – ZAWSZE CZYTELNY TEKST */
+.card,
+.summary-card,
+.raport-card,
+.podsumowanie-card,
+.podsumowanie,
+.podsumowanie-raport,
+.podsumowanie-raport-pracownika,
+.podsumowanie-pracownika,
+.podsumowanie-box,
+.podsumowanie-row {
+    background: #fff !important;
+    color: #222 !important;
+}
+
+.card *,
+.summary-card *,
+.raport-card *,
+.podsumowanie-card *,
+.podsumowanie *,
+.podsumowanie-raport *,
+.podsumowanie-raport-pracownika *,
+.podsumowanie-pracownika *,
+.podsumowanie-box *,
+.podsumowanie-row * {
+    color: #222 !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+/* Szczególnie dla opisów, labeli, muted/secondary */
+.card .text-muted,
+.card .text-secondary,
+.card .secondary,
+.card .muted,
+.summary-card .text-muted,
+.summary-card .text-secondary,
+.summary-card .secondary,
+.summary-card .muted,
+.podsumowanie-card .text-muted,
+.podsumowanie-card .text-secondary,
+.podsumowanie-card .secondary,
+.podsumowanie-card .muted,
+.podsumowanie-raport .text-muted,
+.podsumowanie-raport .text-secondary,
+.podsumowanie-raport .secondary,
+.podsumowanie-raport .muted,
+.podsumowanie-row .text-muted,
+.podsumowanie-row .text-secondary,
+.podsumowanie-row .secondary,
+.podsumowanie-row .muted {
+    color: #222 !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
+    text-shadow: none !important;
+}
+.card span,
+.card label,
+.card small,
+.summary-card span,
+.summary-card label,
+.summary-card small,
+.podsumowanie-card span,
+.podsumowanie-raport span {
+    color: #222 !important;
+    opacity: 1 !important;
+}
+
+/* Wzmocnienie nagłówków/bold */
+.card b, .summary-card b, .raport-card b, .podsumowanie-card b, .podsumowanie-raport b {
+    font-weight: 700;
+    color: #111 !important;
+}
+
+/* 6. TYPOGRAFIA */
 h2, h3, h4 {
     color: #90caf9;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
 
-/* Nowoczesne inputy i selecty */
+/* 7. INPUTY, SELECTY */
 .form-control, .form-select {
     border-radius: 0.9em !important;
     border: 1.4px solid #33475b;
@@ -97,7 +187,7 @@ input[type="date"].form-control, input[type="number"].form-control {
     color-scheme: dark;
 }
 
-/* Nowoczesne przyciski */
+/* 8. PRZYCISKI */
 .btn, button, .btn-primary, .btn-success, .btn-danger, .btn-info, .btn-secondary {
     border-radius: 0.9em !important;
     font-weight: 600;
@@ -140,7 +230,7 @@ input[type="date"].form-control, input[type="number"].form-control {
     color: #fff !important;
 }
 
-/* Glass badge */
+/* 9. BADGE */
 .badge, .form-check-input:checked + .form-check-label::before {
     background: rgba(144,202,249,0.13);
     color: #90caf9 !important;
@@ -151,14 +241,14 @@ input[type="date"].form-control, input[type="number"].form-control {
     box-shadow: 0 1px 6px #0e162055;
 }
 
-/* Efekt glass na polach formularza */
+/* 10. POLA FORMULARZA glass effect */
 input[type="text"].form-control, input[type="number"].form-control, input[type="date"].form-control, select.form-control, textarea.form-control {
     background: rgba(28,34,46,0.97) !important;
     box-shadow: 0 1.5px 8px #14203055;
     color: #e0e2e6 !important;
 }
 
-/* Nowoczesny hover na kafelkach (dashboard) */
+/* 11. KAFELKI DASHBOARD */
 .tile, .dashboard-container .tile {
     transition: background 0.18s, transform 0.18s, box-shadow 0.18s, filter 0.13s;
     filter: saturate(1.10) blur(0.1px);
@@ -174,7 +264,7 @@ input[type="text"].form-control, input[type="number"].form-control, input[type="
     filter: saturate(1.18) blur(0px);
 }
 
-/* Responsywność */
+/* 12. RESPONSYWNOŚĆ */
 @media (max-width: 900px) {
     .container, .section-box, .dashboard-container {
         padding: 1.1rem 0.3rem;
@@ -184,11 +274,12 @@ input[type="text"].form-control, input[type="number"].form-control, input[type="
     }
 }
 
-/* Subtelne animacje */
+/* 13. ANIMACJE */
 .fade-in {
     animation: fadeInPanel 0.7s;
 }
 
+/* 14. SCROLLBAR */
 ::-webkit-scrollbar {
     width: 12px;
     background: #212733;
@@ -196,66 +287,4 @@ input[type="text"].form-control, input[type="number"].form-control, input[type="
 ::-webkit-scrollbar-thumb {
     background: #33475b;
     border-radius: 7px;
-}
-
-/* Czytelność: czarny/dark tekst na białym tle wierszy tabeli */
-.table tbody tr, 
-.table-striped tbody tr, 
-.table-bordered tbody tr {
-    background: #fff !important;
-}
-
-.table tbody td,
-.table-striped tbody td,
-.table-bordered tbody td {
-    color: #222 !important;
-    opacity: 1 !important;
-    font-weight: 700;
-    text-shadow: none !important;
-    background: #fff !important;
-}
-
-/* Jeżeli w niektórych wierszach nadal jest wyblakły tekst (np. disabled, muted, secondary) */
-.table tbody td[class*="text-muted"], 
-.table tbody td[class*="secondary"], 
-.table tbody td[style*="opacity"] {
-    color: #222 !important;
-    opacity: 1 !important;
-    font-weight: 700;
-}
-
-/* Zawsze czytelny tekst w białych kartach podsumowań raportów */
-.card,
-.summary-card,
-.raport-card,
-.podsumowanie-card,
-.podsumowanie,
-.podsumowanie-raport,
-.podsumowanie-raport-pracownika,
-.podsumowanie-pracownika,
-.podsumowanie-box,
-.podsumowanie-row {
-    background: #fff !important;
-    color: #222 !important;
-}
-
-.card *,
-.summary-card *,
-.raport-card *,
-.podsumowanie-card *,
-.podsumowanie *,
-.podsumowanie-raport *,
-.podsumowanie-raport-pracownika *,
-.podsumowanie-pracownika *,
-.podsumowanie-box *,
-.podsumowanie-row * {
-    color: #222 !important;
-    opacity: 1 !important;
-    text-shadow: none !important;
-}
-
-/* Opcjonalnie: wzmocnij wybrane napisy */
-.card b, .summary-card b, .raport-card b, .podsumowanie-card b, .podsumowanie-raport b {
-    font-weight: 700;
-    color: #111 !important;
 }
