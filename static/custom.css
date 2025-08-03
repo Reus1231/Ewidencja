@@ -1,290 +1,373 @@
-/* CIEMNY MOTYW GLASSMORPHISM DLA APLIKACJI PRACOWNICZEJ */
+/* Tło: gradient czerwieni, kafelki: wyraźnie szare, biznesowe */
 
-/* 1. TŁO I OGÓLNY STYL */
 body {
-    background: linear-gradient(135deg, #181b1f 0%, #232b34 100%);
     min-height: 100vh;
+    background: linear-gradient(135deg, #b71c1c 0%, #ff5252 100%);
+    color: #23272f;
     font-family: 'Segoe UI', 'Arial', sans-serif;
-    color: #f3f5f6;
 }
 
-/* 2. PANELE I SEKCJE */
-.container, .section-box, .dashboard-container {
-    background: rgba(34, 40, 52, 0.90);
-    border-radius: 24px;
-    box-shadow: 0 8px 40px #0e162044, 0 1.5px 6px #0e162044;
-    backdrop-filter: blur(10px) saturate(160%);
-    padding: 2.2rem 1.3rem;
-    margin-top: 2.2rem;
-    animation: fadeInPanel 0.7s;
-    color: #f3f5f6;
-}
-@keyframes fadeInPanel {
-    from { opacity: 0; transform: translateY(32px);}
-    to { opacity: 1; transform: none;}
+/* Panel główny – środkowy kontener */
+.panel-glowny-wrapper, .main-panel-container {
+    background: #f4f6f8;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px #1112;
+    padding: 3rem 2rem;
+    margin: 2.2rem auto;
+    max-width: 1200px;
 }
 
-/* 3. TABELA – WIDOCZNOŚĆ I KONTRAST */
-.table, .table-bordered, .table-striped {
-    background: rgba(30,36,49,0.99) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 3px 16px #131d2b99;
+/* Wewnątrz panelu (siatka kafli) */
+.panel-glowny-box {
+    background: #fff;
+    border-radius: 17px;
+    box-shadow: 0 2px 20px #2222;
+    padding: 2.5rem 1.7rem 2.8rem 1.7rem;
+    margin: 0 auto;
+    max-width: 1100px;
+}
+
+/* Tytuł sekcji */
+.panel-glowny-title, .main-panel-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #23272f;
+    letter-spacing: 0.7px;
+    margin-bottom: 2.6rem;
+    text-align: center;
+}
+
+/* Siatka kafelków */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.2rem;
+}
+
+/* KOLOROWE KAFELKI */
+.dashboard-tile, .tile, .dashboard-container .tile {
+    color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 2px 12px #0002, 0 1px 2px #0001;
+    padding: 2.1rem 1.2rem 1.4rem 1.2rem;
+    text-align: center;
+    transition: 
+        background 0.18s,
+        box-shadow 0.18s,
+        border-color 0.18s,
+        transform 0.16s;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 160px;
+    font-weight: 700;
+}
+
+/* Kafelki kolorowe po kolei */
+.dashboard-tile:nth-child(1) { background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); }
+.dashboard-tile:nth-child(2) { background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%); }
+.dashboard-tile:nth-child(3) { background: linear-gradient(135deg, #ffb74d 0%, #f57c00 100%); }
+.dashboard-tile:nth-child(4) { background: linear-gradient(135deg, #ab47bc 0%, #7e57c2 100%); }
+.dashboard-tile:nth-child(5) { background: linear-gradient(135deg, #26c6da 0%, #00838f 100%); }
+.dashboard-tile:nth-child(6) { background: linear-gradient(135deg, #ec407a 0%, #ad1457 100%); }
+.dashboard-tile:nth-child(7) { background: linear-gradient(135deg, #ffa726 0%, #f57c00 100%); }
+.dashboard-tile:nth-child(8) { background: linear-gradient(135deg, #78909c 0%, #455a64 100%); }
+.dashboard-tile:nth-child(9) { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); }
+
+/* Ikona na kafelku */
+.dashboard-icon {
+    font-size: 3.2rem;
+    margin-bottom: 0.7rem;
+    color: #fff;
+    filter: drop-shadow(0 2px 7px #0003);
+    transition: filter 0.16s, color 0.16s;
+}
+
+.dashboard-tile:hover .dashboard-icon { filter: drop-shadow(0 5px 16px #fff3); }
+
+/* Tytuł kafelka */
+.dashboard-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+    color: #fff;
+    text-shadow: 0 1px 8px #0003;
+}
+
+/* Opis kafelka */
+.dashboard-desc {
+    font-size: 1.01rem;
+    color: #fff;
+    opacity: 0.89;
+    font-weight: 500;
+    text-shadow: 0 1px 6px #0001;
+    margin-top: 0.1rem;
+}
+
+/* Hover efekt */
+.dashboard-tile:hover, .tile:hover, .dashboard-container .tile:hover {
+    transform: translateY(-6px) scale(1.024);
+    box-shadow: 0 8px 32px #0004, 0 2px 8px #fff2;
+    filter: brightness(1.07) saturate(1.1);
+    z-index: 2;
+}
+
+/* --- RAPORTY --- */
+.report-main-container {
+    max-width: 1100px;
+    margin: 2.5rem auto;
+    padding: 1.5rem 1.8rem;
+    background: transparent;
+}
+
+.report-worker-summary, .employee-report-card {
+    background: #f4f6f8;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px #2223, 0 1px 2px #b71c1c18;
+    padding: 1.7rem 1.5rem 1.4rem 1.5rem;
+    margin-bottom: 2.2rem;
+    border: 1.5px solid #e0e3e7;
+    transition: box-shadow 0.17s, border 0.17s, background 0.18s;
+}
+
+.report-worker-summary:hover, .employee-report-card:hover {
+    box-shadow: 0 7px 32px #b71c1c44, 0 2px 8px #2225;
+    border-color: #b71c1c;
+    background: #f9fafb;
+}
+
+.report-worker-header, .employee-report-title {
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: #b71c1c;
+    letter-spacing: 0.03em;
+    margin-bottom: 1.25rem;
+    text-shadow: 0 2px 12px #fff1;
+    padding-left: 0.1rem;
+}
+
+.report-table, .employee-report-table {
+    width: 100%;
+    background: #fff !important;
+    border-radius: 12px;
+    box-shadow: 0 1.5px 8px #b71c1c11;
+    border-collapse: separate;
+    border-spacing: 0;
     overflow: hidden;
-    color: #e8f0fc !important;
+    margin-bottom: 0;
+}
+
+.report-table th, .report-table td,
+.employee-report-table th, .employee-report-table td {
+    border: none;
+    padding: 1.05em 1.2em;
+    font-size: 1.08em;
+    color: #23272f;
+    font-weight: 500;
+    background: #fff !important;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.report-table tr:not(:last-child) td,
+.employee-report-table tr:not(:last-child) td {
+    border-bottom: 1.5px solid #e0e3e7;
+}
+
+.report-table th {
+    color: #b71c1c;
+    background: #fbe9e7 !important;
+    font-size: 1.11em;
+    letter-spacing: 0.03em;
+    font-weight: 700;
+}
+
+.report-table td:last-child, .report-table th:last-child {
+    text-align: right;
+}
+
+.report-worker-summary .report-table,
+.employee-report-card .employee-report-table {
+    margin-bottom: 0.2rem;
+}
+
+@media (max-width: 950px) {
+    .report-main-container, .panel-glowny-wrapper, .panel-glowny-box {
+        padding: 1.2rem 0.7rem;
+    }
+}
+@media (max-width: 650px) {
+    .report-worker-summary, .employee-report-card {
+        padding: 1.1rem 0.5rem 0.9rem 0.5rem;
+    }
+    .report-title-main {
+        font-size: 1.3rem;
+    }
+}
+
+/* --- Koniec sekcji raportów --- */
+
+/* Responsywność główna */
+@media (max-width: 1100px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 700px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .panel-glowny-box, .panel-glowny-wrapper, .main-panel-container {
+        padding: 1.1rem 0.5rem;
+    }
+}
+
+/* Tabele, inputy, przyciski, itd. – zostają jak w Twoim kodzie, tylko szarości/czerwienie */
+.table, .table-bordered, .table-striped {
+    background: #fff !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 12px #b71c1c11;
+    color: #212c3b !important;
+    border: 1px solid #e1e6ef !important;
 }
 .table th, .table td {
-    border: none !important;
-    padding: 0.85em 0.7em !important;
+    border: 1px solid #e1e6ef !important;
+    padding: 0.95em 0.8em !important;
     vertical-align: middle;
     font-size: 1.07em;
-    backdrop-filter: blur(4px);
-    color: #e8f0fc !important;
+    color: #212c3b !important;
     font-weight: 500;
-    opacity: 1 !important;
-    text-shadow: 0 1px 2px #161c2433;
+    background: #fff !important;
 }
 .table thead th {
-    background: linear-gradient(90deg, #222b39 60%, #263347 100%) !important;
-    color: #aee6ff !important;
-    letter-spacing: 0.5px;
-    font-size: 1.09em;
-    font-weight: 600;
-    opacity: 1 !important;
+    background: #fbe9e7 !important;
+    color: #b71c1c !important;
+    font-size: 1.11em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-bottom: 2.5px solid #b71c1c !important;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: rgba(26, 29, 36, 0.82) !important;
+    background-color: #f6fafd !important;
 }
 .table-hover tbody tr:hover {
-    background-color: #16202b !important;
-    color: #fff !important;
+    background-color: #ffebee !important;
+    color: #b71c1c !important;
+    transition: background 0.15s, color 0.12s;
+}
+
+/* Nagłówki na kafelkach/kartach */
+h1, h2, h3, h4, h5 {
+    color: #b71c1c;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    margin-bottom: 1.1rem;
+    text-shadow: 0 2px 10px #fff3;
+}
+
+/* Etykiety, tekst pomocniczy */
+label, .text-muted, .text-secondary, .muted, .secondary, small {
+    color: #6b7a90 !important;
     opacity: 1 !important;
+    font-weight: 500;
 }
 
-/* 4. BIAŁE WIERSZE – CZARNY TEKST (PODSUMOWANIA, RAPORTY) */
-.table tbody tr, 
-.table-striped tbody tr, 
-.table-bordered tbody tr {
-    background: #fff !important;
-}
-.table tbody td,
-.table-striped tbody td,
-.table-bordered tbody td {
-    color: #222 !important;
-    opacity: 1 !important;
-    font-weight: 700;
-    text-shadow: none !important;
-    background: #fff !important;
-}
-.table tbody td[class*="text-muted"], 
-.table tbody td[class*="secondary"], 
-.table tbody td[style*="opacity"] {
-    color: #222 !important;
-    opacity: 1 !important;
-    font-weight: 700;
-}
-
-/* 5. KARTY/BOXY PODSUMOWAŃ – ZAWSZE CZYTELNY TEKST */
-.card,
-.summary-card,
-.raport-card,
-.podsumowanie-card,
-.podsumowanie,
-.podsumowanie-raport,
-.podsumowanie-raport-pracownika,
-.podsumowanie-pracownika,
-.podsumowanie-box,
-.podsumowanie-row {
-    background: #fff !important;
-    color: #222 !important;
-}
-
-.card *,
-.summary-card *,
-.raport-card *,
-.podsumowanie-card *,
-.podsumowanie *,
-.podsumowanie-raport *,
-.podsumowanie-raport-pracownika *,
-.podsumowanie-pracownika *,
-.podsumowanie-box *,
-.podsumowanie-row * {
-    color: #222 !important;
-    opacity: 1 !important;
-    text-shadow: none !important;
-}
-
-/* Szczególnie dla opisów, labeli, muted/secondary */
-.card .text-muted,
-.card .text-secondary,
-.card .secondary,
-.card .muted,
-.summary-card .text-muted,
-.summary-card .text-secondary,
-.summary-card .secondary,
-.summary-card .muted,
-.podsumowanie-card .text-muted,
-.podsumowanie-card .text-secondary,
-.podsumowanie-card .secondary,
-.podsumowanie-card .muted,
-.podsumowanie-raport .text-muted,
-.podsumowanie-raport .text-secondary,
-.podsumowanie-raport .secondary,
-.podsumowanie-raport .muted,
-.podsumowanie-row .text-muted,
-.podsumowanie-row .text-secondary,
-.podsumowanie-row .secondary,
-.podsumowanie-row .muted {
-    color: #222 !important;
-    opacity: 1 !important;
-    font-weight: 600 !important;
-    text-shadow: none !important;
-}
-.card span,
-.card label,
-.card small,
-.summary-card span,
-.summary-card label,
-.summary-card small,
-.podsumowanie-card span,
-.podsumowanie-raport span {
-    color: #222 !important;
-    opacity: 1 !important;
-}
-
-/* Wzmocnienie nagłówków/bold */
-.card b, .summary-card b, .raport-card b, .podsumowanie-card b, .podsumowanie-raport b {
-    font-weight: 700;
-    color: #111 !important;
-}
-
-/* 6. TYPOGRAFIA */
-h2, h3, h4 {
-    color: #90caf9;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-}
-
-/* 7. INPUTY, SELECTY */
+/* Inputy/selecty */
 .form-control, .form-select {
-    border-radius: 0.9em !important;
-    border: 1.4px solid #33475b;
-    background: rgba(28,34,46,0.89) !important;
-    color: #e0e2e6 !important;
-    box-shadow: 0 1.5px 8px #14203055;
-    padding: 0.69em 1.1em;
+    border-radius: 0.7em !important;
+    border: 1.4px solid #b6c2d1;
+    background: #fff !important;
+    color: #222 !important;
+    box-shadow: 0 1px 4px #b6c2d122;
+    padding: 0.7em 1.1em;
     font-size: 1.05em;
-    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
 }
 .form-control:focus, .form-select:focus {
-    border-color: #90caf9;
+    border-color: #b71c1c;
     outline: none;
-    box-shadow: 0 0 0 2px #1976d288;
-    background: #232a36 !important;
-    color: #fff !important;
+    box-shadow: 0 0 0 2px #b71c1c44;
+    background: #fff !important;
+    color: #212c3b !important;
 }
 input[type="date"].form-control, input[type="number"].form-control {
     min-width: 110px;
-    color-scheme: dark;
+    color-scheme: light;
 }
 
-/* 8. PRZYCISKI */
+/* Przyciski */
 .btn, button, .btn-primary, .btn-success, .btn-danger, .btn-info, .btn-secondary {
-    border-radius: 0.9em !important;
-    font-weight: 600;
+    border-radius: 0.7em !important;
+    font-weight: 700;
     font-size: 1.08em;
-    box-shadow: 0 2px 18px #0e162055;
+    box-shadow: 0 2px 10px #b71c1c33;
     border: none !important;
-    transition: background 0.18s, color 0.17s, box-shadow 0.13s;
-    padding: 0.65em 1.4em;
+    transition: background 0.15s, color 0.15s, box-shadow 0.09s;
+    padding: 0.7em 1.45em;
 }
-.btn-primary, .btn-success {
-    background: linear-gradient(90deg, #1976d2 60%, #42a5f5 100%);
+.btn-primary, .btn-danger {
+    background: #b71c1c;
     color: #fff !important;
 }
-.btn-primary:hover, .btn-success:hover {
-    background: linear-gradient(90deg, #135ab6 60%, #5ecaff 100%);
+.btn-primary:hover, .btn-danger:hover {
+    background: #e53935;
+    color: #fff !important;
+    box-shadow: 0 4px 14px #b71c1c77;
+}
+.btn-success {
+    background: #388e3c;
     color: #fff !important;
 }
-.btn-danger {
-    background: linear-gradient(90deg, #d32f2f 60%, #ff6659 100%);
-    color: #fff !important;
-}
-.btn-danger:hover {
-    background: linear-gradient(90deg, #b71c1c 60%, #ff8a80 100%);
+.btn-success:hover {
+    background: #2e7031;
     color: #fff !important;
 }
 .btn-info {
-    background: linear-gradient(90deg, #00bcd4 60%, #64ffda 100%);
-    color: #222 !important;
+    background: #00bcd4;
+    color: #b71c1c !important;
 }
 .btn-info:hover {
-    background: linear-gradient(90deg, #0097a7 60%, #1de9b6 100%);
-    color: #222 !important;
+    background: #0097a7;
+    color: #fff !important;
 }
 .btn-secondary {
-    background: linear-gradient(90deg, #607d8b 60%, #90a4ae 100%);
+    background: #607d8b;
     color: #fff !important;
 }
 .btn-secondary:hover {
-    background: linear-gradient(90deg, #455a64 60%, #b0bec5 100%);
+    background: #455a64;
     color: #fff !important;
 }
 
-/* 9. BADGE */
+/* Badge */
 .badge, .form-check-input:checked + .form-check-label::before {
-    background: rgba(144,202,249,0.13);
-    color: #90caf9 !important;
+    background: #ffebee;
+    color: #b71c1c !important;
     font-weight: 600;
     border-radius: 0.8em;
     padding: 0.3em 0.8em;
     font-size: 0.97em;
-    box-shadow: 0 1px 6px #0e162055;
+    box-shadow: 0 1px 4px #b71c1c44;
 }
 
-/* 10. POLA FORMULARZA glass effect */
-input[type="text"].form-control, input[type="number"].form-control, input[type="date"].form-control, select.form-control, textarea.form-control {
-    background: rgba(28,34,46,0.97) !important;
-    box-shadow: 0 1.5px 8px #14203055;
-    color: #e0e2e6 !important;
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+    background: #e4e8ee;
+}
+::-webkit-scrollbar-thumb {
+    background: #b71c1c;
+    border-radius: 7px;
 }
 
-/* 11. KAFELKI DASHBOARD */
-.tile, .dashboard-container .tile {
-    transition: background 0.18s, transform 0.18s, box-shadow 0.18s, filter 0.13s;
-    filter: saturate(1.10) blur(0.1px);
-    box-shadow: 0 8px 32px #1e272b55;
-    background: linear-gradient(135deg, #1a2130 60%, #263347 100%) !important;
-    color: #aee6ff !important;
-}
-.tile:hover, .dashboard-container .tile:hover {
-    background: #232a36 !important;
-    color: #fff !important;
-    transform: translateY(-7px) scale(1.04);
-    box-shadow: 0 2px 24px #1976d288, 0 8px 32px #0a1b3144;
-    filter: saturate(1.18) blur(0px);
-}
-
-/* 12. RESPONSYWNOŚĆ */
-@media (max-width: 900px) {
-    .container, .section-box, .dashboard-container {
-        padding: 1.1rem 0.3rem;
-    }
-    .table th, .table td {
-        font-size: 0.98em;
-    }
-}
-
-/* 13. ANIMACJE */
+/* Animacje wejścia */
 .fade-in {
     animation: fadeInPanel 0.7s;
 }
-
-/* 14. SCROLLBAR */
-::-webkit-scrollbar {
-    width: 12px;
-    background: #212733;
-}
-::-webkit-scrollbar-thumb {
-    background: #33475b;
-    border-radius: 7px;
+@keyframes fadeInPanel {
+    from { opacity: 0; transform: translateY(32px);}
+    to { opacity: 1; transform: none;}
 }

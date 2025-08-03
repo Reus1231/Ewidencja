@@ -1,49 +1,3 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Raport pracowników</h2>
-
-<form method="get" class="mb-4 row g-3">
-    <div class="col-md-4">
-        <label for="employee_id">Pracownik/pracownicy:</label>
-        <select name="employee_id" id="employee_id" class="form-control" multiple size="5">
-            <option value="">-- Wszyscy --</option>
-            {% for emp in employees %}
-                <option value="{{ emp.id }}"
-                    {% if selected_employee_ids and emp.id|string in selected_employee_ids %}selected{% endif %}>
-                    {% if emp.external_id %}
-                        {{ emp.external_id }} -
-                    {% else %}
-                        {{ emp.id }} -
-                    {% endif %}
-                    {{ emp.name }}
-                </option>
-            {% endfor %}
-        </select>
-        <small>Przytrzymaj Ctrl / Cmd, aby zaznaczyć kilku.</small>
-    </div>
-    <div class="col-md-3">
-        <label for="start_date">Data od:</label>
-        <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
-    </div>
-    <div class="col-md-3">
-        <label for="end_date">Data do:</label>
-        <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
-    </div>
-    <div class="col-md-2 align-self-end">
-        <button type="submit" class="btn btn-primary w-100">Pokaż raport</button>
-    </div>
-</form>
-
-<form method="get" action="{{ url_for('employee_reports_export') }}">
-    <input type="hidden" name="start_date" value="{{ start_date }}">
-    <input type="hidden" name="end_date" value="{{ end_date }}">
-    {% for emp_id in selected_employee_ids %}
-        <input type="hidden" name="employee_id" value="{{ emp_id }}">
-    {% endfor %}
-    <button type="submit" class="btn btn-success mb-3">Eksportuj do Excela</button>
-</form>
-</form>
-
 {% if summaries %}
     {% for summary in summaries %}
         <h4>Podsumowanie dla: 
@@ -68,8 +22,114 @@
             </tr>
         </table>
     {% endfor %}
+
+    <!-- SUMY ZBIORCZE DLA WSZYSTKICH PRACOWNIKÓW -->
+    <div class="report-summary-wrapper" style="background:#fff;border-radius:14px;box-shadow:0 2px 18px #b71c1c22;margin:2.8rem 0 1.7rem 0;padding:1.8rem 1.3rem 1.1rem 1.3rem;">
+      <div class="report-summary-title" style="font-size:1.3rem;font-weight:800;color:#b71c1c;margin-bottom:0.9rem;letter-spacing:0.04em;">Podsumowanie łączne</div>
+      <table class="table table-striped table-bordered report-summary-table" id="summaryTable" style="background:#fff;border-radius:10px;box-shadow:0 1.5px 10px #b71c1c11;">
+        <thead>
+          <tr>
+            <th onclick="sortTable(0)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Pracownik</th>
+            <th onclick="sortTable(1)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma godzin</th>
+            <th onclick="sortTable(2)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma zbiorów (akord)</th>
+            <th onclick="sortTable(3)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma wynagrodzenia godzinowego</th>
+            <th onclick="sortTable(4)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma wynagrodzenia akordowego</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sum in total_summaries %}
+          <tr>
+            <td>
+              {% if sum.employee.external_id %}
+                {{ sum.employee.external_id }} -
+              {% else %}
+                {{ sum.employee.id }} -
+              {% endif %}
+              {{ sum.employee.name }}
+            </td>
+            <td>{{ "%.2f"|format(sum.total_hours) }}</td>
+            <td>{{ "%.2f"|format(sum.total_quantity) }}</td>
+            <td>{{ "%.2f"|format(sum.total_hourly_pay) }} PLN</td>
+            <td>{{ "%.2f"|format(sum.total_piece_pay) }} PLN</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <script>
+    function sortTable(n) {
+        var table = document.getElementById("summaryTable");
+        var rows = Array.from(table.tBodies[0].rows);
+        var asc = table.getAttribute('data-sort-col') != n || table.getAttribute('data-sort-dir') != 'asc';
+        rows.sort(function(a, b) {
+            var cellA = a.cells[n].innerText.replace(",", ".").replace(" PLN", "");
+            var cellB = b.cells[n].innerText.replace(",", ".").replace(" PLN", "");
+            var numA = parseFloat(cellA);
+            var numB = parseFloat(cellB);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return asc ? numA - numB : numB - numA;
+            }
+            return asc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+        });
+        rows.forEach(function(row) { table.tBodies[0].appendChild(row); });
+        table.setAttribute('data-sort-col', n);
+        table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+    }
+    </script>
 {% elif start_date or end_date %}
     <p class="text-muted">Brak danych do wyświetlenia w wybranym zakresie lub dla wybranych pracowników.</p>
 {% endif %}
-
-{% endblock %}
+{% if total_summaries %}
+<div style="background:#fff;border-radius:14px;box-shadow:0 2px 18px #b71c1c22;margin:2.8rem 0 1.7rem 0;padding:1.8rem 1.3rem 1.1rem 1.3rem;">
+  <div style="font-size:1.3rem;font-weight:800;color:#b71c1c;margin-bottom:0.9rem;letter-spacing:0.04em;">Podsumowanie łączne</div>
+  <table class="table table-striped table-bordered" id="summaryTable" style="background:#fff;border-radius:10px;box-shadow:0 1.5px 10px #b71c1c11;">
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Pracownik</th>
+        <th onclick="sortTable(1)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma godzin</th>
+        <th onclick="sortTable(2)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma zbiorów (akord)</th>
+        <th onclick="sortTable(3)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma wynagrodzenia godzinowego</th>
+        <th onclick="sortTable(4)" style="background:#fbe9e7;color:#b71c1c;cursor:pointer;">Suma wynagrodzenia akordowego</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sum in total_summaries %}
+      <tr>
+        <td>
+          {% if sum.employee.external_id %}
+            {{ sum.employee.external_id }} -
+          {% else %}
+            {{ sum.employee.id }} -
+          {% endif %}
+          {{ sum.employee.name }}
+        </td>
+        <td>{{ "%.2f"|format(sum.total_hours) }}</td>
+        <td>{{ "%.2f"|format(sum.total_quantity) }}</td>
+        <td>{{ "%.2f"|format(sum.total_hourly_pay) }} PLN</td>
+        <td>{{ "%.2f"|format(sum.total_piece_pay) }} PLN</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<script>
+function sortTable(n) {
+    var table = document.getElementById("summaryTable");
+    var rows = Array.from(table.tBodies[0].rows);
+    var asc = table.getAttribute('data-sort-col') != n || table.getAttribute('data-sort-dir') != 'asc';
+    rows.sort(function(a, b) {
+        var cellA = a.cells[n].innerText.replace(",", ".").replace(" PLN", "");
+        var cellB = b.cells[n].innerText.replace(",", ".").replace(" PLN", "");
+        var numA = parseFloat(cellA);
+        var numB = parseFloat(cellB);
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return asc ? numA - numB : numB - numA;
+        }
+        return asc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+    });
+    rows.forEach(function(row) { table.tBodies[0].appendChild(row); });
+    table.setAttribute('data-sort-col', n);
+    table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+}
+</script>
+{% endif %}
