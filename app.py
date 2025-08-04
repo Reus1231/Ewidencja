@@ -15,7 +15,7 @@ from flask_migrate import Migrate  # DODAJ TEN IMPORT!
 
 from forms import (
     LoginForm, RegisterForm, EmployeeForm, FieldForm, BerryVarietyForm,
-    WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm
+    WorkTypeForm, DailyHarvestForm, EntryForm, PresenceForm, GroupPresenceForm
 )
 import openpyxl
 
@@ -132,27 +132,90 @@ def rozliczenie_czasu_pracy():
 def presence():
     form = PresenceForm()
     employees = Employee.query.order_by(Employee.name).all()
-    form.employee_id.choices = [(e.id, e.name) for e in Employee.query.order_by(Employee.name)]
+    form.employee_id.choices = [(e.id, e.name) for e in employees]
     if form.validate_on_submit():
         presence = Presence(
             employee_id=form.employee_id.data,
             date=form.date.data,
             time_in=form.time_in.data,
             time_out=form.time_out.data,
+            break_minutes=int(form.break_minutes.data or 0),
             comment=form.comment.data
         )
         db.session.add(presence)
+        db.session.flush()
+        # --- AUTOMATYCZNY WPIS PRACY GODZINOWEJ ---
+        employee = Employee.query.get(form.employee_id.data)
+        worktype = WorkType.query.filter_by(is_piece_rate=False).first()
+        if worktype and presence.time_in and presence.time_out:
+            delta = datetime.combine(date.today(), presence.time_out) - datetime.combine(date.today(), presence.time_in)
+            total_minutes = delta.total_seconds() // 60 - (presence.break_minutes or 0)
+            hours = round(total_minutes / 60, 2)
+            if hours > 0:
+                entry = Entry(
+                    date=form.date.data,
+                    employee_id=form.employee_id.data,
+                    work_type_id=worktype.id,
+                    hours=hours,
+                    quantity=0,
+                    comment="(Automatyczny wpis z obecności)",
+                    piece_rate=0
+                )
+                db.session.add(entry)
         db.session.commit()
-        flash("Zapisano obecność.", "success")
+        flash("Zapisano obecność i wpis pracy godzinowej.", "success")
         return redirect(url_for('presence_list'))
-    return render_template('presence.html', form=form)
+    return render_template('presence.html', form=form, employees=employees)
+
+
+@app.route('/group_presence', methods=['GET', 'POST'])
+@login_required
+def group_presence():
+    form = GroupPresenceForm()
+    employees = Employee.query.filter_by(is_active=True).order_by(Employee.name).all()
+    form.employees.choices = [(e.id, e.name) for e in employees]
+    if form.employees.data is None:
+        form.employees.data = []
+    if form.validate_on_submit():
+        for emp_id in form.employees.data:
+            presence = Presence(
+                employee_id=emp_id,
+                date=form.date.data,
+                time_in=form.time_in.data,
+                break_minutes=int(form.break_minutes.data or 0),
+                time_out=form.time_out.data,
+                comment=form.comment.data
+            )
+            db.session.add(presence)
+            # --- AUTOMATYCZNY WPIS PRACY GODZINOWEJ ---
+            employee = Employee.query.get(emp_id)
+            worktype = WorkType.query.filter_by(is_piece_rate=False).first()
+            if worktype and presence.time_in and presence.time_out:
+                delta = datetime.combine(date.today(), presence.time_out) - datetime.combine(date.today(), presence.time_in)
+                total_minutes = delta.total_seconds() // 60 - (presence.break_minutes or 0)
+                hours = round(total_minutes / 60, 2)
+                if hours > 0:
+                    entry = Entry(
+                        date=form.date.data,
+                        employee_id=emp_id,
+                        work_type_id=worktype.id,
+                        hours=hours,
+                        quantity=0,
+                        comment="(Automatyczny wpis z obecności grupowej)",
+                        piece_rate=0
+                    )
+                    db.session.add(entry)
+        db.session.commit()
+        flash('Zapisano obecność grupowo i wpisy godzinowe!', 'success')
+        return redirect(url_for('presence_list'))
+    return render_template('group_presence.html', form=form, employees=employees)
 
 @app.route('/presence_list')
 @login_required
 def presence_list():
     presences = Presence.query.order_by(Presence.date.desc(), Presence.time_in.desc()).all()
     return render_template('presence_list.html', presences=presences)
-
+    
 # --- POPRAWIONY I JEDYNY ENDPOINT FAST HARVEST ---
 @app.route('/fast_harvest', methods=['GET', 'POST'])
 @login_required

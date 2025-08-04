@@ -7,6 +7,7 @@
             <th>Data</th>
             <th>Pracownik</th>
             <th>Godzina wejścia</th>
+            <th>Przerwa (min.)</th>
             <th>Godzina wyjścia</th>
             <th>Komentarz</th>
         </tr>
@@ -24,6 +25,7 @@
                 {{ p.employee.name }}
             </td>
             <td>{{ p.time_in.strftime('%H:%M') }}</td>
+            <td>{{ p.break_minutes or 0 }}</td>
             <td>{% if p.time_out %}{{ p.time_out.strftime('%H:%M') }}{% endif %}</td>
             <td>{{ p.comment }}</td>
         </tr>
@@ -31,4 +33,5 @@
     </tbody>
 </table>
 <a href="{{ url_for('presence') }}" class="btn btn-primary">Dodaj obecność</a>
+<a href="{{ url_for('group_presence') }}" class="btn btn-success">Obecność grupowa</a>
 {% endblock %}

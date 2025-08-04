@@ -78,3 +78,4 @@ class Presence(db.Model):
     time_out = db.Column(db.Time, nullable=True)
     break_minutes = db.Column(db.Integer, nullable=True, default=0)
     comment = db.Column(db.Text, nullable=True)
+    employee = db.relationship('Employee', backref='presences')

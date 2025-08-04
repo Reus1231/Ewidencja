@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, FloatField, DecimalField, BooleanField, SubmitField, SelectField, DateField, TextAreaField, TimeField
+from wtforms import StringField, PasswordField, FloatField, DecimalField, BooleanField, SubmitField, SelectField, DateField, TextAreaField, TimeField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, Optional, EqualTo
 from datetime import datetime, date
 
@@ -66,3 +66,12 @@ class PresenceForm(FlaskForm):
     break_minutes = FloatField('Przerwa (minuty)', validators=[Optional()])
     comment = TextAreaField('Komentarz', validators=[Optional()])
     submit = SubmitField('Zapisz')
+    
+class GroupPresenceForm(FlaskForm):
+    employees = SelectMultipleField('Pracownicy', coerce=int, validators=[DataRequired()])
+    date = DateField('Data', default=date.today, validators=[DataRequired()])
+    time_in = TimeField('Godzina wejścia', validators=[DataRequired()])
+    break_minutes = FloatField('Przerwa (minuty)', validators=[Optional()])
+    time_out = TimeField('Godzina wyjścia', validators=[Optional()])
+    comment = TextAreaField('Komentarz', validators=[Optional()])
+    submit = SubmitField('Zapisz grupowo')
