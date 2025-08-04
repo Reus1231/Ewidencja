@@ -916,10 +916,23 @@ def employee_reports():
     else:
         summaries = None
 
+    # SUMY ZBIORCZE
+    total_summaries = []
+    if summaries:
+        for s in summaries:
+            total_summaries.append({
+                "employee": s['employee'],
+                "total_hours": s['hours'] or 0,
+                "total_quantity": s['quantity'] or 0,
+                "total_hourly_pay": s['hourly_pay'] or 0,
+                "total_piece_pay": s['piece_pay'] or 0,
+            })
+
     return render_template(
         'employee_reports.html',
         employees=employees,
         summaries=summaries,
+        total_summaries=total_summaries,
         selected_employee_ids=selected_employee_ids,
         start_date=start_date,
         end_date=end_date

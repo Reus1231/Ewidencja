@@ -27,26 +27,26 @@
         </div>
       </form>
       <div class="table-responsive rounded-3 shadow-sm">
-        <table class="table table-hover align-middle mb-0 bg-white" style="min-width:1200px;">
+        <table class="table table-hover align-middle mb-0 bg-white" id="hoursTable" style="min-width:1200px;">
           <thead class="sticky-top bg-primary text-white">
             <tr>
-              <th class="text-center">Kod PR</th>
-              <th>Imię</th>
-              <th>Nazwisko</th>
-              <th>START</th>
-              <th>Przerwa</th>
-              <th>STOP</th>
-              <th>Praca na akord</th>
-              <th>Praca na godziny</th>
-              <th>Suma czasu pracy</th>
+              <th class="text-center" onclick="sortTable(0)">Kod PR</th>
+              <th onclick="sortTable(1)">Imię</th>
+              <th onclick="sortTable(2)">Nazwisko</th>
+              <th onclick="sortTable(3)">START</th>
+              <th onclick="sortTable(4)">Przerwa</th>
+              <th onclick="sortTable(5)">STOP</th>
+              <th onclick="sortTable(6)">Praca na akord</th>
+              <th onclick="sortTable(7)">Praca na godziny</th>
+              <th onclick="sortTable(8)">Suma czasu pracy</th>
               {% for field in fields %}
-                <th>{{ field.name }}</th>
+                <th onclick="sortTable({{ 9 + loop.index0 }})">{{ field.name }}</th>
               {% endfor %}
-              <th>Sztuki razem</th>
-              <th>Razem waga</th>
-              <th>Płaca za akord</th>
-              <th>Płaca za godzinę</th>
-              <th>Wynagrodzenie brutto</th>
+              <th onclick="sortTable({{ 9 + fields|length }})">Sztuki razem</th>
+              <th onclick="sortTable({{ 10 + fields|length }})">Razem waga</th>
+              <th onclick="sortTable({{ 11 + fields|length }})">Płaca za akord</th>
+              <th onclick="sortTable({{ 12 + fields|length }})">Płaca za godzinę</th>
+              <th onclick="sortTable({{ 13 + fields|length }})">Wynagrodzenie brutto</th>
             </tr>
           </thead>
           <tbody>
@@ -72,9 +72,97 @@
             </tr>
             {% endfor %}
           </tbody>
+          <tfoot>
+            <tr class="bg-light fw-bold">
+              <td colspan="6" class="text-end">SUMA:</td>
+              <td class="text-end" id="sum_praca_akord">0.00</td>
+              <td class="text-end" id="sum_praca_godziny">0.00</td>
+              <td></td>
+              {% for field in fields %}
+                <td class="text-end" id="sum_field_{{ loop.index0 }}">0.00</td>
+              {% endfor %}
+              <td class="text-end" id="sum_sztuki_razem">0.00</td>
+              <td class="text-end" id="sum_razem_waga">0.00</td>
+              <td class="text-end text-success" id="sum_placa_akord">0.00</td>
+              <td class="text-end text-primary" id="sum_placa_godziny">0.00</td>
+              <td class="text-end fw-bold text-dark" id="sum_wynagrodzenie_brutto">0.00</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
   </div>
 </div>
+<script>
+// --- SORTOWANIE TABELI ---
+function sortTable(n) {
+    var table = document.getElementById("hoursTable");
+    var tbody = table.tBodies[0];
+    var rows = Array.from(tbody.rows);
+    var asc = table.getAttribute('data-sort-col') != n || table.getAttribute('data-sort-dir') != 'asc';
+    rows.sort(function(a, b) {
+        let cellA = a.cells[n].innerText.replace(",", ".").replace(" PLN", "");
+        let cellB = b.cells[n].innerText.replace(",", ".").replace(" PLN", "");
+        let numA = parseFloat(cellA);
+        let numB = parseFloat(cellB);
+        if (!isNaN(numA) && !isNaN(numB)) {
+            return asc ? numA - numB : numB - numA;
+        }
+        return asc ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+    });
+    rows.forEach(function(row) { tbody.appendChild(row); });
+    table.setAttribute('data-sort-col', n);
+    table.setAttribute('data-sort-dir', asc ? 'asc' : 'desc');
+    sumTable();
+}
+
+// --- SUMY NA DOLE TABELI ---
+function sumTable() {
+    var table = document.getElementById("hoursTable");
+    var tbody = table.tBodies[0];
+    var rows = Array.from(tbody.rows);
+    // Indeksy kolumn (dostosuj jeśli zmienisz kolejność!)
+    const idx_praca_akord = 6;
+    const idx_praca_godziny = 7;
+    // fieldy dynamicznie:
+    const fields_count = {{ fields|length }};
+    const idx_field_first = 9;
+    const idx_field_last = idx_field_first + fields_count - 1;
+    const idx_sztuki_razem = idx_field_last + 1;
+    const idx_razem_waga = idx_field_last + 2;
+    const idx_placa_akord = idx_field_last + 3;
+    const idx_placa_godziny = idx_field_last + 4;
+    const idx_wynagrodzenie_brutto = idx_field_last + 5;
+
+    let sum_praca_akord = 0, sum_praca_godziny = 0;
+    let sum_field = Array(fields_count).fill(0);
+    let sum_sztuki_razem = 0, sum_razem_waga = 0;
+    let sum_placa_akord = 0, sum_placa_godziny = 0, sum_wynagrodzenie_brutto = 0;
+
+    rows.forEach(function(row) {
+        sum_praca_akord += parseFloat(row.cells[idx_praca_akord].innerText.replace(",", ".") || 0);
+        sum_praca_godziny += parseFloat(row.cells[idx_praca_godziny].innerText.replace(",", ".") || 0);
+        for (let i = 0; i < fields_count; i++) {
+            sum_field[i] += parseFloat(row.cells[idx_field_first + i].innerText.replace(",", ".") || 0);
+        }
+        sum_sztuki_razem += parseFloat(row.cells[idx_sztuki_razem].innerText.replace(",", ".") || 0);
+        sum_razem_waga += parseFloat(row.cells[idx_razem_waga].innerText.replace(",", ".") || 0);
+        sum_placa_akord += parseFloat(row.cells[idx_placa_akord].innerText.replace(",", ".") || 0);
+        sum_placa_godziny += parseFloat(row.cells[idx_placa_godziny].innerText.replace(",", ".") || 0);
+        sum_wynagrodzenie_brutto += parseFloat(row.cells[idx_wynagrodzenie_brutto].innerText.replace(",", ".") || 0);
+    });
+    document.getElementById("sum_praca_akord").innerText = sum_praca_akord.toFixed(2);
+    document.getElementById("sum_praca_godziny").innerText = sum_praca_godziny.toFixed(2);
+    for (let i = 0; i < fields_count; i++) {
+        document.getElementById("sum_field_" + i).innerText = sum_field[i].toFixed(2);
+    }
+    document.getElementById("sum_sztuki_razem").innerText = sum_sztuki_razem.toFixed(2);
+    document.getElementById("sum_razem_waga").innerText = sum_razem_waga.toFixed(2);
+    document.getElementById("sum_placa_akord").innerText = sum_placa_akord.toFixed(2);
+    document.getElementById("sum_placa_godziny").innerText = sum_placa_godziny.toFixed(2);
+    document.getElementById("sum_wynagrodzenie_brutto").innerText = sum_wynagrodzenie_brutto.toFixed(2);
+}
+// Wywołaj sumowanie po załadowaniu
+window.addEventListener('DOMContentLoaded', sumTable);
+</script>
 {% endblock %}
