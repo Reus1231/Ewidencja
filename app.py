@@ -213,8 +213,105 @@ def group_presence():
 @app.route('/presence_list')
 @login_required
 def presence_list():
-    presences = Presence.query.order_by(Presence.date.desc(), Presence.time_in.desc()).all()
-    return render_template('presence_list.html', presences=presences)
+    date_str = request.args.get('date')
+    if date_str:
+        presences = Presence.query.filter_by(date=date_str).order_by(Presence.time_in).all()
+    else:
+        presences = []
+    return render_template('presence_list.html', presences=presences, selected_date=date_str)
+    
+@app.route('/edit_presence/<int:presence_id>', methods=['GET', 'POST'])
+@login_required
+def edit_presence(presence_id):
+    presence = Presence.query.get_or_404(presence_id)
+    from forms import PresenceForm
+    form = PresenceForm(obj=presence)
+    employees = Employee.query.order_by(Employee.name).all()
+    form.employee_id.choices = [(e.id, e.name) for e in employees]
+    if form.validate_on_submit():
+        # Zapamiętaj stare dane
+        old_date = presence.date
+        old_employee_id = presence.employee_id
+
+        # Aktualizuj obecność
+        presence.employee_id = form.employee_id.data
+        presence.date = form.date.data
+        presence.time_in = form.time_in.data
+        presence.time_out = form.time_out.data
+        presence.break_minutes = int(form.break_minutes.data or 0)
+        presence.comment = form.comment.data
+
+        worktype = WorkType.query.filter_by(is_piece_rate=False).first()
+        if worktype and presence.time_in and presence.time_out:
+            # Szukaj Entry wg starego lub nowego pracownika/datę (jeśli ktoś zmienia pracownika/dzień)
+            entry = Entry.query.filter_by(
+                date=old_date,
+                employee_id=old_employee_id,
+                work_type_id=worktype.id
+            ).first()
+            # Jeśli zmieniono pracownika/datę, a już istnieje Entry dla nowych danych, nie rób duplikatu!
+            entry_new = Entry.query.filter_by(
+                date=presence.date,
+                employee_id=presence.employee_id,
+                work_type_id=worktype.id
+            ).first()
+            delta = datetime.combine(date.today(), presence.time_out) - datetime.combine(date.today(), presence.time_in)
+            total_minutes = delta.total_seconds() // 60 - (presence.break_minutes or 0)
+            hours = round(total_minutes / 60, 2)
+            if hours > 0:
+                if entry and (entry.date == presence.date and entry.employee_id == presence.employee_id):
+                    # Aktualizuj istniejący
+                    entry.hours = hours
+                    entry.comment = "(Automatycznie zaktualizowano z obecności)"
+                elif entry and not entry_new:
+                    # Przepisz na nowego pracownika/datę, jeśli zmieniono
+                    entry.date = presence.date
+                    entry.employee_id = presence.employee_id
+                    entry.hours = hours
+                    entry.comment = "(Automatycznie zaktualizowano z obecności - zmiana daty/pracownika)"
+                elif entry_new:
+                    # Jeśli już istnieje Entry dla nowych danych, aktualizuj go
+                    entry_new.hours = hours
+                    entry_new.comment = "(Automatycznie zaktualizowano z obecności - na nowym pracowniku/dacie)"
+                else:
+                    # Nie ma żadnego Entry, utwórz nowy
+                    entry = Entry(
+                        date=presence.date,
+                        employee_id=presence.employee_id,
+                        work_type_id=worktype.id,
+                        hours=hours,
+                        quantity=0,
+                        comment="(Automatyczny wpis z obecności)",
+                        piece_rate=0
+                    )
+                    db.session.add(entry)
+            else:
+                # Jeśli godzin 0 – usuń Entry (niepotrzebny)
+                if entry:
+                    db.session.delete(entry)
+        db.session.commit()
+        flash("Zaktualizowano obecność (i wpis pracy godzinowej).", "success")
+        return redirect(url_for('presence_list', date=presence.date.isoformat()))
+    return render_template('edit_presence.html', form=form, employees=employees, presence=presence)
+    
+@app.route('/delete_presence/<int:presence_id>', methods=['POST'])
+@login_required
+def delete_presence(presence_id):
+    presence = Presence.query.get_or_404(presence_id)
+    # Usuń powiązany wpis pracy godzinowej, jeśli istnieje
+    worktype = WorkType.query.filter_by(is_piece_rate=False).first()
+    if worktype:
+        entry = Entry.query.filter_by(
+            date=presence.date,
+            employee_id=presence.employee_id,
+            work_type_id=worktype.id
+        ).first()
+        if entry:
+            db.session.delete(entry)
+    db.session.delete(presence)
+    db.session.commit()
+    flash('Usunięto obecność i powiązany wpis godzinowy.', 'success')
+    return redirect(url_for('presence_list', date=presence.date.isoformat()))
     
 # --- POPRAWIONY I JEDYNY ENDPOINT FAST HARVEST ---
 @app.route('/fast_harvest', methods=['GET', 'POST'])
@@ -1181,6 +1278,44 @@ def generate_report():
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
     return render_template('generate_report.html', employees=employees)
+    
+@app.route('/field_harvest_report', methods=['GET'])
+@login_required
+def field_harvest_report():
+    fields = Field.query.order_by(Field.name).all()
+    selected_field_id = request.args.get('field_id', type=int)
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    query = DailyHarvest.query
+    if selected_field_id:
+        query = query.filter_by(field_id=selected_field_id)
+    if start_date:
+        query = query.filter(DailyHarvest.date >= start_date)
+    if end_date:
+        query = query.filter(DailyHarvest.date <= end_date)
+
+    harvests = query.all()
+
+    # Suma dla wybranego pola lub wszystkich
+    total_kg = sum(h.quantity_kg for h in harvests)
+
+    # Suma z podziałem na pola (jeśli chcesz tabelkę wszystkich pól)
+    field_summaries = []
+    if not selected_field_id:
+        for field in fields:
+            field_sum = sum(h.quantity_kg for h in harvests if h.field_id == field.id)
+            field_summaries.append({'field': field, 'sum_kg': field_sum})
+
+    return render_template(
+        'field_harvest_report.html',
+        fields=fields,
+        selected_field_id=selected_field_id,
+        start_date=start_date,
+        end_date=end_date,
+        total_kg=total_kg,
+        field_summaries=field_summaries
+    )
 
 @app.route('/harvest_overview', methods=['GET'])
 def harvest_overview():

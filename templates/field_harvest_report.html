@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Raport zbiorów z pola</h2>
+<form method="get" class="mb-3">
+    <label>Pole:</label>
+    <select name="field_id" class="form-control" style="width:auto;display:inline;">
+        <option value="">Wszystkie pola</option>
+        {% for field in fields %}
+            <option value="{{ field.id }}" {% if selected_field_id==field.id %}selected{% endif %}>{{ field.name }}</option>
+        {% endfor %}
+    </select>
+    <label>Od:</label>
+    <input type="date" name="start_date" value="{{ start_date or '' }}">
+    <label>Do:</label>
+    <input type="date" name="end_date" value="{{ end_date or '' }}">
+    <button class="btn btn-primary btn-sm">Pokaż</button>
+</form>
+
+{% if selected_field_id %}
+    {% set selected_field = (fields|selectattr('id', 'equalto', selected_field_id)|first) %}
+    {% if selected_field %}
+        <h4>Pole: {{ selected_field.name }}</h4>
+        <p><b>Suma zebranych kg:</b> {{ total_kg|round(2) }} kg</p>
+    {% else %}
+        <h4>Błąd: Nie znaleziono pola!</h4>
+    {% endif %}
+{% else %}
+    <h4>Wszystkie pola</h4>
+    <table class="table">
+        <thead>
+            <tr><th>Pole</th><th>Suma kg</th></tr>
+        </thead>
+        <tbody>
+        {% for fs in field_summaries %}
+            <tr>
+                <td>{{ fs.field.name }}</td>
+                <td>{{ fs.sum_kg|round(2) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <p><b>Suma ze wszystkich pól:</b> {{ total_kg|round(2) }} kg</p>
+{% endif %}
+
+{% endblock %}

@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>Lista obecności</h2>
+
+<form method="get" class="mb-3">
+    <label for="date">Data:</label>
+    <input type="date" id="date" name="date" value="{{ selected_date or '' }}">
+    <button class="btn btn-primary btn-sm">Pokaż</button>
+</form>
+
+{% if not presences %}
+    <div class="alert alert-info">Brak obecności do wyświetlenia dla wybranego dnia.</div>
+{% else %}
 <table class="table">
     <thead>
         <tr>
@@ -10,6 +20,7 @@
             <th>Przerwa (min.)</th>
             <th>Godzina wyjścia</th>
             <th>Komentarz</th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -28,10 +39,17 @@
             <td>{{ p.break_minutes or 0 }}</td>
             <td>{% if p.time_out %}{{ p.time_out.strftime('%H:%M') }}{% endif %}</td>
             <td>{{ p.comment }}</td>
+            <td>
+                <a href="{{ url_for('edit_presence', presence_id=p.id) }}" class="btn btn-sm btn-info">Edytuj</a>
+                <form action="{{ url_for('delete_presence', presence_id=p.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Na pewno usunąć?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+{% endif %}
 <a href="{{ url_for('presence') }}" class="btn btn-primary">Dodaj obecność</a>
 <a href="{{ url_for('group_presence') }}" class="btn btn-success">Obecność grupowa</a>
 {% endblock %}

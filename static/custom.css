@@ -1,8 +1,8 @@
-/* Tło: gradient czerwieni, kafelki: wyraźnie szare, biznesowe */
+/* Tło: JASNO-SZARE, kafelki: wyraźnie szare, biznesowe */
 
 body {
     min-height: 100vh;
-    background: linear-gradient(135deg, #b71c1c 0%, #ff5252 100%);
+    background: #f4f6f8; /* jasnoszary, neutralny */
     color: #23272f;
     font-family: 'Segoe UI', 'Arial', sans-serif;
 }
@@ -27,6 +27,28 @@ body {
     max-width: 1100px;
 }
 
+@media (max-width: 900px) {
+    .panel-glowny-wrapper, .main-panel-container {
+        padding: 1.4rem 0.6rem;
+        margin: 1.1rem auto;
+    }
+    .panel-glowny-box {
+        padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .panel-glowny-wrapper, .main-panel-container {
+        padding: 0.4rem 0.1rem;
+        margin: 0.5rem auto;
+        border-radius: 8px;
+    }
+    .panel-glowny-box {
+        padding: 0.5rem 0.1rem 1rem 0.1rem;
+        border-radius: 8px;
+    }
+}
+
 /* Tytuł sekcji */
 .panel-glowny-title, .main-panel-title {
     font-size: 2.2rem;
@@ -37,11 +59,34 @@ body {
     text-align: center;
 }
 
+@media (max-width: 600px) {
+    .panel-glowny-title, .main-panel-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
+    }
+}
+
 /* Siatka kafelków */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2.2rem;
+}
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+        margin: 0 auto;
+        width: 99%;
+    }
 }
 
 /* KOLOROWE KAFELKI */
@@ -66,6 +111,23 @@ body {
     font-weight: 700;
 }
 
+@media (max-width: 900px) {
+    .dashboard-tile, .tile, .dashboard-container .tile {
+        min-height: 120px;
+        padding: 1.1rem 0.7rem 1rem 0.7rem;
+        border-radius: 11px;
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-tile, .tile, .dashboard-container .tile {
+        min-height: 85px;
+        font-size: 0.98rem;
+        padding: 0.7rem 0.3rem 0.7rem 0.3rem;
+        border-radius: 7px;
+    }
+}
+
 /* Kafelki kolorowe po kolei */
 .dashboard-tile:nth-child(1) { background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); }
 .dashboard-tile:nth-child(2) { background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%); }
@@ -88,6 +150,19 @@ body {
 
 .dashboard-tile:hover .dashboard-icon { filter: drop-shadow(0 5px 16px #fff3); }
 
+@media (max-width: 900px) {
+    .dashboard-icon {
+        font-size: 2.1rem;
+        margin-bottom: 0.3rem;
+    }
+}
+@media (max-width: 600px) {
+    .dashboard-icon {
+        font-size: 1.35rem;
+        margin-bottom: 0.1rem;
+    }
+}
+
 /* Tytuł kafelka */
 .dashboard-title {
     font-size: 1.15rem;
@@ -95,6 +170,9 @@ body {
     margin-bottom: 0.35rem;
     color: #fff;
     text-shadow: 0 1px 8px #0003;
+}
+@media (max-width: 600px) {
+    .dashboard-title { font-size: 1rem; }
 }
 
 /* Opis kafelka */
@@ -105,6 +183,9 @@ body {
     font-weight: 500;
     text-shadow: 0 1px 6px #0001;
     margin-top: 0.1rem;
+}
+@media (max-width: 600px) {
+    .dashboard-desc { font-size: 0.91rem; }
 }
 
 /* Hover efekt */
@@ -209,21 +290,6 @@ body {
 }
 
 /* --- Koniec sekcji raportów --- */
-
-/* Responsywność główna */
-@media (max-width: 1100px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-@media (max-width: 700px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-    .panel-glowny-box, .panel-glowny-wrapper, .main-panel-container {
-        padding: 1.1rem 0.5rem;
-    }
-}
 
 /* Tabele, inputy, przyciski, itd. – zostają jak w Twoim kodzie, tylko szarości/czerwienie */
 .table, .table-bordered, .table-striped {
@@ -370,4 +436,64 @@ input[type="date"].form-control, input[type="number"].form-control {
 @keyframes fadeInPanel {
     from { opacity: 0; transform: translateY(32px);}
     to { opacity: 1; transform: none;}
+}
+
+/* --- ROZWIJANE MENU (DROPDOWN) w NAVBARZE --- */
+.navbar-custom .dropdown-menu {
+    background: #6a0a0a;
+    border: none;
+    min-width: 200px;
+    border-radius: 0.7rem;
+    box-shadow: 0 4px 20px #0003;
+    margin-top: 0.2rem;
+    padding: 0.3rem 0;
+}
+.navbar-custom .dropdown-item, .navbar-custom .dropdown-item.active {
+    color: #fff !important;
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    transition: background 0.12s;
+    font-size: 1.07rem;
+}
+.navbar-custom .dropdown-item:hover, .navbar-custom .dropdown-item.active {
+    background: #a91e1e !important;
+    color: #fff !important;
+}
+.navbar-custom .dropdown-toggle::after {
+    margin-left: 0.4em;
+}
+
+/* RESPONSYWNOŚĆ NAVBAR */
+@media (max-width: 991px) {
+    .navbar-custom .navbar-nav {
+        gap: 0.2rem !important;
+        margin-left: 0.2rem !important;
+    }
+    .navbar-custom .nav-link, .navbar-custom .nav-item > a {
+        padding: 0.4rem 0.7rem !important;
+        font-size: 0.99rem !important;
+    }
+    .navbar-custom .btn-warning {
+        padding: 0.45rem 1rem !important;
+        font-size: 0.99rem !important;
+    }
+    .navbar-custom .dropdown-menu {
+        min-width: 98vw;
+        left: -18vw !important;
+        right: 0;
+        margin: 0 0.1rem;
+        border-radius: 0.6em;
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .navbar-custom .nav-link, .navbar-custom .nav-item > a {
+        font-size: 0.97rem !important;
+        padding: 0.35rem 0.6rem !important;
+    }
+    .navbar-custom .btn-warning {
+        padding: 0.35rem 0.8rem !important;
+        font-size: 0.97rem !important;
+    }
 }
