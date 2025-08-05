@@ -3,11 +3,57 @@
 <div class="dashboard-container">
   <div class="dashboard-title">Panel główny</div>
   <div class="tiles-grid">
+    <!-- Kafelek PRACA -->
+    <div class="tile tile-group" onclick="toggleTiles('work-tiles')">
+      <span class="tile-icon"><i class="fas fa-briefcase"></i></span>
+      <span class="tile-title">Praca</span>
+      <span class="tile-desc">Zobacz operacje związane z pracą</span>
+    </div>
+    <!-- Kafelek ADMINISTRACJA I RAPORTY -->
+    <div class="tile tile-group" onclick="toggleTiles('admin-tiles')">
+      <span class="tile-icon"><i class="fas fa-cogs"></i></span>
+      <span class="tile-title">Administracja i raporty</span>
+      <span class="tile-desc">Zobacz ustawienia i raporty</span>
+    </div>
+    <!-- Nowy kafelek: Panel pracownika (podsumowanie z QR) -->
+    <a href="{{ url_for('harvest_overview') }}" class="tile tile-harvest-overview" tabindex="0" title="Panel pracownika (podsumowanie)">
+      <span class="tile-icon"><i class="fas fa-qrcode"></i></span>
+      <span class="tile-title">Panel pracownika</span>
+      <span class="tile-desc">Podsumowanie zbiorów i godzin pracy</span>
+    </a>
+  </div>
+
+  <!-- Kafelki PRACA -->
+  <div id="work-tiles" class="tiles-grid tiles-grouped" style="display:none; margin-top:1.5rem;">
     <a href="{{ url_for('employees') }}" class="tile tile-employees" tabindex="0" title="Pracownicy">
       <span class="tile-icon"><i class="fas fa-users"></i></span>
       <span class="tile-title">Pracownicy</span>
       <span class="tile-desc">Zarządzaj pracownikami</span>
     </a>
+    <a href="{{ url_for('harvests') }}" class="tile tile-harvests" tabindex="0" title="Dzienne zbiory">
+      <span class="tile-icon"><i class="fas fa-basket-shopping"></i></span>
+      <span class="tile-title">Dzienne zbiory</span>
+      <span class="tile-desc">Wprowadzaj zbiory</span>
+    </a>
+    <a href="{{ url_for('rozliczenie_czasu_pracy') }}" class="tile tile-harvests" tabindex="0" title="Rozliczenie czasu pracy">
+      <span class="tile-icon"><i class="fas fa-calendar-check"></i></span>
+      <span class="tile-title">Rozliczenie czasu pracy</span>
+      <span class="tile-desc">Podsumowanie czasu pracy</span>
+    </a>
+    <a href="{{ url_for('fast_harvest') }}" class="tile tile-fast-harvest" tabindex="0" title="Szybki wpis zbiorów">
+      <span class="tile-icon"><i class="fas fa-bolt"></i></span>
+      <span class="tile-title">Szybki wpis zbiorów</span>
+      <span class="tile-desc">Wpisz zbiory dla wielu pracowników naraz</span>
+    </a>
+    <a href="{{ url_for('presence_list') }}" class="tile tile-presence" tabindex="0" title="Obecność">
+      <span class="tile-icon"><i class="fas fa-user-check"></i></span>
+      <span class="tile-title">Obecność</span>
+      <span class="tile-desc">Lista obecności</span>
+    </a>
+  </div>
+
+  <!-- Kafelki ADMINISTRACJA I RAPORTY -->
+  <div id="admin-tiles" class="tiles-grid tiles-grouped" style="display:none; margin-top:1.5rem;">
     <a href="{{ url_for('fields') }}" class="tile tile-fields" tabindex="0" title="Pola">
       <span class="tile-icon"><i class="fas fa-tractor"></i></span>
       <span class="tile-title">Pola</span>
@@ -23,31 +69,43 @@
       <span class="tile-title">Typy pracy</span>
       <span class="tile-desc">Typy pracy</span>
     </a>
-    <a href="{{ url_for('harvests') }}" class="tile tile-harvests" tabindex="0" title="Dzienne zbiory">
-      <span class="tile-icon"><i class="fas fa-basket-shopping"></i></span>
-      <span class="tile-title">Dzienne zbiory</span>
-      <span class="tile-desc">Wprowadzaj zbiory</span>
-    </a>
     <a href="{{ url_for('entries') }}" class="tile tile-entries" tabindex="0" title="Wpisy pracy">
       <span class="tile-icon"><i class="fas fa-clock"></i></span>
       <span class="tile-title">Wpisy pracy</span>
       <span class="tile-desc">Rejestruj prace</span>
     </a>
-    <a href="{{ url_for('rozliczenie_czasu_pracy') }}" class="tile tile-harvests" tabindex="0" title="Rozliczenie czasu pracy">
-      <span class="tile-icon"><i class="fas fa-calendar-check"></i></span>
-      <span class="tile-title">Rozliczenie czasu pracy</span>
-      <span class="tile-desc">Podsumowanie czasu pracy</span>
-    </a>
-    <a href="{{ url_for('employee_reports') }}" class="tile tile-reports" tabindex="0" title="Raporty">
+    <!-- Różne raporty -->
+    <a href="{{ url_for('employee_reports') }}" class="tile tile-reports" tabindex="0" title="Raporty pracownicze">
       <span class="tile-icon"><i class="fas fa-file-alt"></i></span>
-      <span class="tile-title">Raporty</span>
-      <span class="tile-desc">Generuj raporty</span>
+      <span class="tile-title">Raporty pracownicze</span>
+      <span class="tile-desc">Generuj raporty pracownicze</span>
     </a>
-    <a href="{{ url_for('fast_harvest') }}" class="tile tile-fast-harvest" tabindex="0" title="Szybki wpis zbiorów">
-      <span class="tile-icon"><i class="fas fa-bolt"></i></span>
-      <span class="tile-title">Szybki wpis zbiorów</span>
-      <span class="tile-desc">Wpisz zbiory dla wielu pracowników naraz</span>
+    <a href="{{ url_for('field_harvest_report') }}" class="tile tile-reports" tabindex="0" title="Raport zbiorów z pól">
+      <span class="tile-icon"><i class="fas fa-chart-area"></i></span>
+      <span class="tile-title">Raport zbiorów z pól</span>
+      <span class="tile-desc">Analizuj plonowanie z pól</span>
+    </a>
+    <a href="{{ url_for('daily_report') }}" class="tile tile-reports" tabindex="0" title="Raport dzienny">
+      <span class="tile-icon"><i class="fas fa-calendar-day"></i></span>
+      <span class="tile-title">Raport dzienny</span>
+      <span class="tile-desc">Podsumowanie dnia</span>
+    </a>
+    <!-- Backup bazy -->
+    <a href="{{ url_for('download_backup') }}" class="tile tile-backup" tabindex="0" title="Pobierz backup bazy">
+      <span class="tile-icon"><i class="fas fa-database"></i></span>
+      <span class="tile-title">Pobierz backup bazy</span>
+      <span class="tile-desc">Kopia zapasowa danych</span>
     </a>
   </div>
 </div>
+
+<script>
+function toggleTiles(id) {
+  let el = document.getElementById(id);
+  // schowaj obie grupy, potem pokaż klikniętą (przełączanie)
+  let all = document.querySelectorAll('.tiles-grouped');
+  all.forEach(div => { if(div.id !== id) div.style.display = "none"; });
+  el.style.display = (el.style.display === "none" || el.style.display === "") ? "grid" : "none";
+}
+</script>
 {% endblock %}

@@ -1,15 +1,15 @@
-/* Tło: JASNO-SZARE, kafelki: wyraźnie szare, biznesowe */
+/* Tło: CIEMNIEJSZY SZARY, kafelki: wyraźne szare, biznesowe */
 
 body {
     min-height: 100vh;
-    background: #f4f6f8; /* jasnoszary, neutralny */
+    background: #808080; /* ciemniejszy szary */
     color: #23272f;
     font-family: 'Segoe UI', 'Arial', sans-serif;
 }
 
 /* Panel główny – środkowy kontener */
 .panel-glowny-wrapper, .main-panel-container {
-    background: #f4f6f8;
+    background: #e1e3e8;
     border-radius: 20px;
     box-shadow: 0 8px 40px #1112;
     padding: 3rem 2rem;
@@ -19,7 +19,7 @@ body {
 
 /* Wewnątrz panelu (siatka kafli) */
 .panel-glowny-box {
-    background: #fff;
+    background: #f4f5f7;
     border-radius: 17px;
     box-shadow: 0 2px 20px #2222;
     padding: 2.5rem 1.7rem 2.8rem 1.7rem;
@@ -129,15 +129,15 @@ body {
 }
 
 /* Kafelki kolorowe po kolei */
-.dashboard-tile:nth-child(1) { background: linear-gradient(135deg, #42a5f5 0%, #1976d2 100%); }
-.dashboard-tile:nth-child(2) { background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%); }
-.dashboard-tile:nth-child(3) { background: linear-gradient(135deg, #ffb74d 0%, #f57c00 100%); }
-.dashboard-tile:nth-child(4) { background: linear-gradient(135deg, #ab47bc 0%, #7e57c2 100%); }
-.dashboard-tile:nth-child(5) { background: linear-gradient(135deg, #26c6da 0%, #00838f 100%); }
-.dashboard-tile:nth-child(6) { background: linear-gradient(135deg, #ec407a 0%, #ad1457 100%); }
-.dashboard-tile:nth-child(7) { background: linear-gradient(135deg, #ffa726 0%, #f57c00 100%); }
-.dashboard-tile:nth-child(8) { background: linear-gradient(135deg, #78909c 0%, #455a64 100%); }
-.dashboard-tile:nth-child(9) { background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%); }
+.dashboard-tile:nth-child(1) { background: linear-gradient(135deg, #4271a5 0%, #1b263b 100%); }
+.dashboard-tile:nth-child(2) { background: linear-gradient(135deg, #5c7d6a 0%, #285943 100%); }
+.dashboard-tile:nth-child(3) { background: linear-gradient(135deg, #b0a94d 0%, #7d6b00 100%); }
+.dashboard-tile:nth-child(4) { background: linear-gradient(135deg, #7b4bab 0%, #3c2457 100%); }
+.dashboard-tile:nth-child(5) { background: linear-gradient(135deg, #2690da 0%, #16324f 100%); }
+.dashboard-tile:nth-child(6) { background: linear-gradient(135deg, #b0407a 0%, #5a1457 100%); }
+.dashboard-tile:nth-child(7) { background: linear-gradient(135deg, #b79226 0%, #7d5c00 100%); }
+.dashboard-tile:nth-child(8) { background: linear-gradient(135deg, #61646c 0%, #23272f 100%); }
+.dashboard-tile:nth-child(9) { background: linear-gradient(135deg, #5c7d6a 0%, #285943 100%); }
 
 /* Ikona na kafelku */
 .dashboard-icon {
@@ -205,19 +205,19 @@ body {
 }
 
 .report-worker-summary, .employee-report-card {
-    background: #f4f6f8;
+    background: #e1e3e8;
     border-radius: 16px;
     box-shadow: 0 4px 24px #2223, 0 1px 2px #b71c1c18;
     padding: 1.7rem 1.5rem 1.4rem 1.5rem;
     margin-bottom: 2.2rem;
-    border: 1.5px solid #e0e3e7;
+    border: 1.5px solid #c6c8cf;
     transition: box-shadow 0.17s, border 0.17s, background 0.18s;
 }
 
 .report-worker-summary:hover, .employee-report-card:hover {
     box-shadow: 0 7px 32px #b71c1c44, 0 2px 8px #2225;
     border-color: #b71c1c;
-    background: #f9fafb;
+    background: #eaeaf0;
 }
 
 .report-worker-header, .employee-report-title {
@@ -255,7 +255,7 @@ body {
 
 .report-table tr:not(:last-child) td,
 .employee-report-table tr:not(:last-child) td {
-    border-bottom: 1.5px solid #e0e3e7;
+    border-bottom: 1.5px solid #c6c8cf;
 }
 
 .report-table th {
@@ -297,10 +297,10 @@ body {
     border-radius: 10px !important;
     box-shadow: 0 2px 12px #b71c1c11;
     color: #212c3b !important;
-    border: 1px solid #e1e6ef !important;
+    border: 1px solid #c6c8cf !important;
 }
 .table th, .table td {
-    border: 1px solid #e1e6ef !important;
+    border: 1px solid #c6c8cf !important;
     padding: 0.95em 0.8em !important;
     vertical-align: middle;
     font-size: 1.07em;
@@ -317,7 +317,7 @@ body {
     border-bottom: 2.5px solid #b71c1c !important;
 }
 .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: #f6fafd !important;
+    background-color: #ececf2 !important;
 }
 .table-hover tbody tr:hover {
     background-color: #ffebee !important;
@@ -422,7 +422,7 @@ input[type="date"].form-control, input[type="number"].form-control {
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 12px;
-    background: #e4e8ee;
+    background: #c6c8cf;
 }
 ::-webkit-scrollbar-thumb {
     background: #b71c1c;
